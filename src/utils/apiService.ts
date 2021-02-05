@@ -1,24 +1,65 @@
-import axios, {AxiosInstance} from 'axios';
-import config from 'utils/config';
-import LOCAL_STORAGE_KEY from 'utils/consts'
+import LOCAL_STORAGE_KEY from 'utils/consts';
+import cloudWalletApi from 'utils/cloudWallet';
+import {endpoints} from 'constants/endpoints';
+import axios from 'axios';
 
-const { SDK_ACCESS_TOKEN } = LOCAL_STORAGE_KEY
-const { accessApiKey, env } = config
-const baseURL: string = `https://cloud-wallet-api.${env}.affinity-project.org/api/v1`
+export class ClientApiService {
+  async signUp(username: string, password: string) {
+    const signUpParams = { username, password }
+    const { data } =  await cloudWalletApi.post(endpoints.SIGNUP, signUpParams);
 
-const cloudWalletApi: AxiosInstance = axios.create({
-	baseURL,
-	headers: {
-		'Api-Key': accessApiKey,
-		'Content-Type': 'application/json',
-	},
-});
+    return data;
+  }
 
-// Set the AUTH token for subsequent requests
-cloudWalletApi.interceptors.request.use(req => {
-	const token = localStorage.getItem(SDK_ACCESS_TOKEN);
-	req.headers.Authorization =  token ? `Bearer ${token}` : '';
-	return req;
-});
+  async loginWithUsernameAndPassword(username: string, password: string) {
+    const loginParams = { username, password }
+    const { data } =  await cloudWalletApi.post(endpoints.LOGIN, loginParams)
 
-export default cloudWalletApi
+    return data;
+  }
+
+  static async getWalletCredentials() {
+    const {data} = await cloudWalletApi.get(endpoints.WALLET_CREDENTIALS);
+
+    return data.credentials;
+  }
+
+  storeAccessAndDidTokens(accessToken: string, did: string) {
+    ClientApiService._saveAccessTokenToLocalStorage(accessToken);
+    ClientApiService._saveDidTokenToLocalStorage(did);
+  }
+
+  static setAuthorizationBearer = (accessToken: string) => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  static getAccessTokenFromLocalStorage(): string | null {
+    const token = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
+
+    if( !token ) {
+      return null;
+    }
+
+    return token;
+  }
+
+  static _saveAccessTokenToLocalStorage(accessToken: string) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN, accessToken)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  static _saveDidTokenToLocalStorage(did: string) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY.DID_TOKEN, did)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+}
+
+const ApiService = new ClientApiService();
+
+export default ApiService;

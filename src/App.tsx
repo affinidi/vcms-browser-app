@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.scss';
+import React, {useEffect, useState} from 'react';
+import LayoutHeaderNavigation from 'components/layout/header/navigation/Navigation';
+import Router from 'components/router/Router';
+import {AuthContext, authContextDefaultValue, AuthContextState} from 'auth/context';
+import LOCAL_STORAGE_KEY from 'utils/consts';
+import ApiService, {ClientApiService} from 'utils/apiService';
 
 function App() {
+  const [authState, setAuthState] = useState<AuthContextState>(authContextDefaultValue.authState)
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
+    const didToken = localStorage.getItem(LOCAL_STORAGE_KEY.DID_TOKEN);
+
+    if( accessToken && didToken ) {
+      ClientApiService.setAuthorizationBearer(accessToken);
+
+      setAuthState(prevState => {
+        return {
+          ...prevState,
+          didToken,
+          accessToken
+        }
+      })
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <AuthContext.Provider value={{authState, setAuthState}}>
+      <LayoutHeaderNavigation/>
+      <Router/>
+    </AuthContext.Provider>
+  )
 }
 
 export default App;

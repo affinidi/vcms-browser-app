@@ -1,9 +1,11 @@
 interface Constants {
-  SDK_ACCESS_TOKEN: string
+  ACCESS_TOKEN: string,
+  DID_TOKEN: string
 }
 
 const LOCAL_STORAGE_KEY: Constants = {
-  SDK_ACCESS_TOKEN: 'affinidi:accessToken'
+  ACCESS_TOKEN: 'affinidi:accessToken',
+  DID_TOKEN: 'affinidi:didToken'
 }
 
 export default LOCAL_STORAGE_KEY
