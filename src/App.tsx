@@ -3,7 +3,7 @@ import LayoutHeaderNavigation from 'components/layout/header/navigation/Navigati
 import Router from 'components/router/Router';
 import {AuthContext, authContextDefaultValue, AuthContextState} from 'auth/context';
 import LOCAL_STORAGE_KEY from 'utils/consts';
-import ApiService, {ClientApiService} from 'utils/apiService';
+import {ClientApiService} from 'utils/apiService';
 
 function App() {
   const [authState, setAuthState] = useState<AuthContextState>(authContextDefaultValue.authState)

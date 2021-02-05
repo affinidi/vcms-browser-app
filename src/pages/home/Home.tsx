@@ -1,8 +1,6 @@
 import React, {useContext, useState} from 'react';
-import ApiService, {ClientApiService} from 'utils/apiService';
 import {AuthContext} from 'auth/context';
 import cloudIssuerApi from 'utils/cloudIssuer';
-import {getVCEmploymentPersonV1Context} from '@affinidi/vc-data';
 import {Button} from 'react-bootstrap';
 import 'pages/home/Home.scss'
 
@@ -61,10 +59,6 @@ const HomePage = () => {
       ...state,
       unsignedVc: data.unsignedVC
     })
-  }
-
-  const button2 = () => {
-    ClientApiService.getWalletCredentials();
   }
 
   return (

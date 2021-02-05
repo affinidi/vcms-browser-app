@@ -33,15 +33,6 @@ export class ClientApiService {
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   }
 
-  static getAccessTokenFromLocalStorage(): string | null {
-    const token = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-
-    if( !token ) {
-      return null;
-    }
-
-    return token;
-  }
 
   static _saveAccessTokenToLocalStorage(accessToken: string) {
     try {
