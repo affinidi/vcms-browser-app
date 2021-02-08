@@ -15,7 +15,7 @@ const UserLogin = () => {
     event.preventDefault();
 
     try {
-      const tokenData = await ApiService.loginWithUsernameAndPassword(username, password)
+      const tokenData = await ApiService.logIn(username, password)
 
       const {accessToken, did} = tokenData;
 

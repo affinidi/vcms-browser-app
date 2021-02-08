@@ -1,5 +1,4 @@
 import React from 'react';
-import exampleImage from 'assets/images/content/affinidi-ssi-cycle-example.jpg'
 import universityIcon from 'assets/images/icons/university.svg'
 import studentIcon from 'assets/images/icons/student.svg'
 import calculatorIcon from 'assets/images/icons/calculator.svg'
@@ -72,7 +71,7 @@ const IntroPage = () => {
           <p>An entity that verifies if the credential shared by a holder is valid (i.e. if the credential comes from a trusted issuer)</p>
         </div>
       </div>
-      <p>For more information and well documented tutorials, please visit <a href='https://www.affinidi.com/vcms' target='_blank'>https://www.affinidi.com/vcms</a>.</p>
+      <p>For more information and well documented tutorials, please visit <a href='https://www.affinidi.com/vcms' target='_blank' rel='noreferrer'>https://www.affinidi.com/vcms</a>.</p>
     </div>
   )
 }

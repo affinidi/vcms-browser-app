@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {AppContext} from 'context/app';
 import {issuerApi} from 'utils/api';
 import {Button} from 'react-bootstrap';
@@ -8,16 +8,37 @@ import ApiService, {ClientApiService} from 'utils/apiService';
 import employmentVcData from 'utils/vc-data-examples/employment';
 
 interface State {
-  unsignedVc: any,
-  signedVc: any
+  currentUnsignedVC: any,
+  currentSignedVC: any,
+  isCurrentVCSigned: boolean,
+  verifiedVCs: undefined | null | any[]
 }
 
 const HomePage = () => {
   const [state, setState] = useState<State>({
-    unsignedVc: null,
-    signedVc: null
+    currentUnsignedVC: null,
+    currentSignedVC: null,
+    isCurrentVCSigned: false,
+    verifiedVCs: undefined
   })
   const {appState} = useContext(AppContext);
+
+  useEffect(() => {
+    const getVerifiedVCs = async () => {
+      try {
+        const arrayOfVerifiedVCs = await ClientApiService.getVerifiedVCs();
+
+        setState({
+          ...state,
+          verifiedVCs: arrayOfVerifiedVCs && arrayOfVerifiedVCs.length ? [...arrayOfVerifiedVCs] : null
+        })
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    getVerifiedVCs();
+  }, []);
 
   const issueEmploymentPersonVC = async () => {
     try {
@@ -25,12 +46,14 @@ const HomePage = () => {
 
       example.holderDid = appState.didToken || '';
 
-      const {data} = await issuerApi.post(endpoints.VC_BUILD_UNSIGNED, example);
+      const {unsignedVC} = await ClientApiService.issueUnsignedVC(example);
 
       setState({
         ...state,
-        unsignedVc: data.unsignedVC
+        currentUnsignedVC: unsignedVC
       })
+
+      alert('Unsigned VC successfully created.');
     } catch (error) {
       console.log(error.message)
     }
@@ -38,16 +61,16 @@ const HomePage = () => {
 
   const signVc = async () => {
     try {
-      const {signedCredential} = await ApiService.signVC({
-        unsignedCredential: state.unsignedVc
+      const {signedCredential} = await ClientApiService.signVC({
+        unsignedCredential: state.currentUnsignedVC
       });
 
       setState({
         ...state,
-        signedVc: signedCredential
+        currentSignedVC: signedCredential
       })
 
-      alert('VC successfully signed');
+      alert('Unsigned VC successfully signed.');
     } catch (error) {
       console.log(error.message);
     }
@@ -55,9 +78,14 @@ const HomePage = () => {
 
   const verifyVC = async () => {
     try {
-      await ClientApiService.verifyVC([state.signedVc]);
+      await ClientApiService.verifyVC([state.currentSignedVC]);
 
-      alert('VC successfully validated');
+      setState({
+        ...state,
+        isCurrentVCSigned: true,
+      })
+
+      alert('Signed VC successfully verified.');
     } catch (error) {
       console.log(error.message);
     }
@@ -65,37 +93,120 @@ const HomePage = () => {
 
   const storeVerifiedVC = async () => {
     try {
-      await ClientApiService.storeVerifiedVCs([state.signedVc]);
+      const {credentialIds} = await ClientApiService.storeVerifiedVCs([state.currentSignedVC]);
 
-      alert('VC successfully stored');
+      if( Array.isArray(credentialIds) && credentialIds.length ) {
+        const oldVerifiedVCs = state.verifiedVCs ? [...state.verifiedVCs] : [];
+
+        setState({
+          ...state,
+          verifiedVCs: [...oldVerifiedVCs, state.currentSignedVC],
+          currentUnsignedVC: null,
+          currentSignedVC: null
+        })
+      }
+
+      alert('Verified VC successfully stored in your cloud wallet.');
     } catch (error) {
       console.log(error.message);
     }
   }
 
-  const getVerifiedVCs = async () => {
+  const deleteVerifiedVC = async (index: number) => {
     try {
-      await ClientApiService.getVerifiedVCs();
+      if( state.verifiedVCs ) {
+        await ClientApiService.deleteVerifiedVC(state.verifiedVCs[index].id);
 
-      alert('Verified VCs successfully loaded');
+        alert('Verified VC successfully deleted from your cloud wallet.');
+      }
     } catch (error) {
       console.log(error.message);
     }
   }
-
-  console.log(state);
 
   return (
-    <div className='page-form'>
-      <div className='home__buttons'>
-        <Button className='home__button' onClick={issueEmploymentPersonVC}>Issue employment VC</Button>
-        <Button className='home__button' onClick={signVc}>Sign VC</Button>
-        <Button className='home__button' onClick={verifyVC}>Verify VC</Button>
-        <Button className='home__button' onClick={storeVerifiedVC}>Store VC</Button>
-        <Button className='home__button' onClick={getVerifiedVCs}>Get verified VCs</Button>
-      </div>
+    <div>
+      <div className='tutorial'>
+        <div className='tutorial__column tutorial__column--issuer'>
+          <h3 className='tutorial__column-title'>Issuer</h3>
+          <div className='tutorial__column-steps'>
+            <div className='tutorial__step'>
+              <span className='tutorial__step-text'>
+                <strong>Step 1:</strong> Issue unsigned VC
+              </span>
+              <Button onClick={issueEmploymentPersonVC}>Issue unsigned VC</Button>
+            </div>
+            <div className='tutorial__step'>
+              <span className='tutorial__step-text'>
+                <strong>Step 2:</strong> Sign the unsigned VC
+              </span>
+              <Button onClick={signVc}>Sign unsigned VC</Button>
+            </div>
+          </div>
+        </div>
+        <div className='tutorial__column tutorial__column--holder'>
+          <h3 className='tutorial__column-title'>Holder</h3>
+          <div className='tutorial__column-steps'>
+            <div className='tutorial__step'>
+              <span className='tutorial__step-text'>
+                <strong>Step 4:</strong> Store verified VC
+              </span>
+              <Button onClick={storeVerifiedVC}>Store verified VC</Button>
+            </div>
 
-      {state.unsignedVc && <textarea className='home__textarea' readOnly name='credentials' rows={8} value={JSON.stringify(state.unsignedVc, undefined, '\t')}/>}
+            <h5 className='font-weight-bold'>Current VC:{(!state.currentUnsignedVC && !state.currentSignedVC) && (' None')}</h5>
+            {(state.currentUnsignedVC || state.currentSignedVC) && (
+              <>
+                <div>
+                  <span className='tutorial__status'>
+                    <input type='checkbox' readOnly checked={!!state.currentSignedVC} />
+                    <label>Signed</label>
+                  </span>
+                  <span className='tutorial__status'>
+                    <input type='checkbox' readOnly checked={state.isCurrentVCSigned} />
+                    <label>Verified</label>
+                  </span>
+                </div>
+                <textarea
+                  className='tutorial__textarea'
+                  readOnly
+                  name='credentials'
+                  value={JSON.stringify(state.currentUnsignedVC, undefined, '\t')}
+                />
+              </>
+            )}
+
+            <div className='tutorial__verified-vcs'>
+              <h5 className='font-weight-bold'>Already verified VCs:</h5>
+              {state.verifiedVCs === undefined && ('Loading...')}
+              {state.verifiedVCs === null && ('You didn\'t verify any VCs')}
+              {state.verifiedVCs && state.verifiedVCs.map((verifiedVC, index) => {
+                return (
+                  <div key={index} className='tutorial__textarea-block'>
+                    <textarea
+                      className='tutorial__textarea tutorial__textarea--small'
+                      readOnly
+                      name='credentials'
+                      value={JSON.stringify(verifiedVC, undefined, '\t')}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+        <div className='tutorial__column tutorial__column--verifier'>
+          <h3 className='tutorial__column-title'>Verifier</h3>
+          <div className='tutorial__column-steps'>
+            <div className='tutorial__step'>
+              <span className='tutorial__step-text'>
+                <strong>Step 3:</strong> Verify VC
+              </span>
+              <Button onClick={verifyVC}>Verify signed VC</Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

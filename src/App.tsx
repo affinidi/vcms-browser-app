@@ -5,9 +5,12 @@ import {AppContext, appContextDefaultValue, AppContextState} from 'context/app';
 import LOCAL_STORAGE_KEY from 'utils/consts';
 import {ClientApiService} from 'utils/apiService';
 import {apuInstances} from 'utils/api';
+import {decodeAccessToken} from 'utils/jwt';
 
 function App() {
-  const [appState, setAppState] = useState<AppContextState>(appContextDefaultValue.appState)
+  const [appState, setAppState] = useState<AppContextState>({
+    ...appContextDefaultValue.appState
+  })
 
   useEffect(() => {
     const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
@@ -21,7 +24,8 @@ function App() {
           ...prevState,
           didToken,
           accessToken,
-          isAuthenticated: true
+          isAuthenticated: true,
+          username: decodeAccessToken(accessToken).username
         }
       })
     }
