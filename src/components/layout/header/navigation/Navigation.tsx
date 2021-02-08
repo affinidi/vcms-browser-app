@@ -1,9 +1,8 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Link, NavLink} from 'react-router-dom';
 import {Container, Nav, Navbar, NavbarBrand} from 'react-bootstrap'
 import {routes} from 'constants/routes'
 import 'components/layout/header/navigation/Navigation.scss'
-import {AuthContext} from '../../../../App';
 
 const LayoutHeaderNavigation = () => {
   const [showNavbar, setShowNavbar] = useState<boolean>(false);

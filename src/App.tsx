@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import LayoutHeaderNavigation from 'components/layout/header/navigation/Navigation';
 import Router from 'components/router/Router';
-import {AuthContext, authContextDefaultValue, AuthContextState} from 'auth/context';
+import {AppContext, appContextDefaultValue, AppContextState} from 'context/app';
 import LOCAL_STORAGE_KEY from 'utils/consts';
 import {ClientApiService} from 'utils/apiService';
 
 function App() {
-  const [authState, setAuthState] = useState<AuthContextState>(authContextDefaultValue.authState)
+  const [appState, setAppState] = useState<AppContextState>(appContextDefaultValue.appState)
 
   useEffect(() => {
     const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
@@ -15,7 +15,7 @@ function App() {
     if( accessToken && didToken ) {
       ClientApiService.setAuthorizationBearer(accessToken);
 
-      setAuthState(prevState => {
+      setAppState(prevState => {
         return {
           ...prevState,
           didToken,
@@ -26,10 +26,10 @@ function App() {
   }, []);
 
   return (
-    <AuthContext.Provider value={{authState, setAuthState}}>
+    <AppContext.Provider value={{appState, setAppState}}>
       <LayoutHeaderNavigation/>
       <Router/>
-    </AuthContext.Provider>
+    </AppContext.Provider>
   )
 }
 
