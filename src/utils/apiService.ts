@@ -1,5 +1,5 @@
 import LOCAL_STORAGE_KEY from 'utils/consts';
-import {cloudWalletApi, registryApi, verifierApi} from 'utils/api';
+import {cloudWalletApi, verifierApi} from 'utils/api';
 import {endpoints} from 'constants/endpoints';
 
 export class ClientApiService {
@@ -58,9 +58,25 @@ export class ClientApiService {
     }
   }
 
+  static _removeAccessTokenToLocalStorage() {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   static _saveDidTokenToLocalStorage(did: string) {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY.DID_TOKEN, did)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  static _removeDidTokenToLocalStorage() {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY.DID_TOKEN)
     } catch (err) {
       console.error(err)
     }

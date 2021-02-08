@@ -28,6 +28,9 @@ const LayoutHeaderNavigation = () => {
         <Navbar.Collapse className={showNavbar ? 'show' : ''}>
           <Nav className="justify-content-end">
             <Nav.Item>
+              <Nav.Link as={NavLink} activeClassName='is-active' to={routes.INTRO}>Intro</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={NavLink} activeClassName='is-active' to={routes.SIGNUP}>Sign Up</Nav.Link>
             </Nav.Item>
             <Nav.Item>

@@ -5,7 +5,8 @@ interface Routes {
   SIGNUP_CONFIRM: string,
   ISSUER: string,
   VERIFIER: string,
-  HOLDER: string
+  HOLDER: string,
+  INTRO: string
 }
 
 export const routes: Routes = {
@@ -16,4 +17,5 @@ export const routes: Routes = {
   ISSUER: '/issuer',
   VERIFIER: '/verifier',
   HOLDER: '/holder',
+  INTRO: '/intro'
 }

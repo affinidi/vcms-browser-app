@@ -4,6 +4,7 @@ import Router from 'components/router/Router';
 import {AppContext, appContextDefaultValue, AppContextState} from 'context/app';
 import LOCAL_STORAGE_KEY from 'utils/consts';
 import {ClientApiService} from 'utils/apiService';
+import {apuInstances} from 'utils/api';
 
 function App() {
   const [appState, setAppState] = useState<AppContextState>(appContextDefaultValue.appState)
@@ -19,16 +20,40 @@ function App() {
         return {
           ...prevState,
           didToken,
-          accessToken
+          accessToken,
+          isAuthenticated: true
         }
       })
     }
+
+    apuInstances.forEach(instance => {
+      /**
+       * In case of 401 HTTP responses, remove tokens from localstorage
+       * and reset app context state (basically, log out user on client side).
+       * */
+      instance.interceptors.response.use(function (response) {
+        return response;
+      }, function (error) {
+        if (401 === error.response.status) {
+          ClientApiService._removeAccessTokenToLocalStorage()
+          ClientApiService._removeDidTokenToLocalStorage()
+
+          setAppState({
+            ...appState,
+            ...appContextDefaultValue
+          })
+
+        } else {
+          return Promise.reject(error);
+        }
+      });
+    })
   }, []);
 
   return (
     <AppContext.Provider value={{appState, setAppState}}>
       <LayoutHeaderNavigation/>
-      <Router/>
+      <Router isUserAuthenticated={appState.isAuthenticated}/>
     </AppContext.Provider>
   )
 }

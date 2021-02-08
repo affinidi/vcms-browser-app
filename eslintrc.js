@@ -1,3 +1,3 @@
 module.exports = {
-  extends: ["@affinidi/eslint-config"],
+  extends: ["@affinidi/eslint-config"]
 }

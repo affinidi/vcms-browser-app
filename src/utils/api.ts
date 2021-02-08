@@ -37,3 +37,5 @@ export const verifierApi: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+export const apuInstances = [registryApi, cloudWalletApi, issuerApi, verifierApi];
