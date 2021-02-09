@@ -38,4 +38,4 @@ export const verifierApi: AxiosInstance = axios.create({
   },
 });
 
-export const apuInstances = [registryApi, cloudWalletApi, issuerApi, verifierApi];
+export const apiInstances = [registryApi, cloudWalletApi, issuerApi, verifierApi];

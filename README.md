@@ -11,18 +11,18 @@ generated using npm.
 
 ## Environment
 
-API key is required to use this application. You can get the API key [here](https://apikey.affinidi.com/).
+API KEY HASH is required to use this application. You can get the API key [here](https://apikey.affinidi.com/).
 
-Using the API KEY:
+Using the API KEY HASH:
 - Option 1: create an `.env` file by `cp .env.example .env` and replacing the value in the `<<>>`
 
-- Option 2: Add the API key created above to your package.json into the `start` and `build` commands like this:
+- Option 2: Add the API KEY HASH created above to your package.json into the `start` and `build` commands like this:
 
 ```
 ......
   "scripts": {
-    "start": "REACT_APP_ENVIRONMENT=prod REACT_APP_API_KEY=........ react-scripts start",
-    "build": "REACT_APP_ENVIRONMENT=prod REACT_APP_API_KEY=........ react-scripts build",
+    "start": "REACT_APP_ENVIRONMENT=prod REACT_APP_API_KEY_HASH=........ react-scripts start",
+    "build": "REACT_APP_ENVIRONMENT=prod REACT_APP_API_KEY_HASH=........ react-scripts build",
 ......
 ```
 
