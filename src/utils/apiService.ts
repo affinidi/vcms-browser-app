@@ -1,27 +1,65 @@
 import LOCAL_STORAGE_KEY from 'utils/consts';
-import cloudWalletApi from 'utils/cloudWallet';
+import {cloudWalletApi, issuerApi, verifierApi} from 'utils/api';
 import {endpoints} from 'constants/endpoints';
-import axios from 'axios';
 
 export class ClientApiService {
   async signUp(username: string, password: string) {
     const signUpParams = { username, password }
-    const { data } =  await cloudWalletApi.post(endpoints.SIGNUP, signUpParams);
+    const {data} =  await cloudWalletApi.post(endpoints.SIGNUP, signUpParams);
 
     return data;
   }
 
-  async loginWithUsernameAndPassword(username: string, password: string) {
+  async logIn(username: string, password: string) {
     const loginParams = { username, password }
-    const { data } =  await cloudWalletApi.post(endpoints.LOGIN, loginParams)
+    const {data} =  await cloudWalletApi.post(endpoints.LOGIN, loginParams)
 
     return data;
   }
 
-  static async getWalletCredentials() {
-    const {data} = await cloudWalletApi.get(endpoints.WALLET_CREDENTIALS);
+  async logout() {
+    const {data} = await cloudWalletApi.post(endpoints.LOGOUT)
 
-    return data.credentials;
+    ClientApiService._removeAccessTokenToLocalStorage()
+    ClientApiService._removeDidTokenToLocalStorage()
+
+    return data;
+  }
+
+  static async issueUnsignedVC(example: any) {
+    const {data} = await issuerApi.post(endpoints.VC_BUILD_UNSIGNED, example);
+
+    return data;
+  }
+
+  static async signVC(dataToSign: any) {
+    const {data} = await cloudWalletApi.post(endpoints.WALLET_SIGN_CREDENTIALS, dataToSign);
+
+    return data;
+  }
+
+  static async verifyVC(verifiableCredentials: any[]) {
+    const {data} = await verifierApi.post(endpoints.VERIFIER_VERIFY_VCS, {verifiableCredentials})
+
+    return data;
+  }
+
+  static async storeVerifiedVCs(verifiedVCs: any[]) {
+    const {data} = await cloudWalletApi.post(endpoints.WALLET_CREDENTIALS, {data: verifiedVCs})
+
+    return data;
+  }
+
+  static async getVerifiedVCs() {
+    const {data} = await cloudWalletApi.get(endpoints.WALLET_CREDENTIALS)
+
+    return data;
+  }
+
+  static async deleteVerifiedVC(VCId: string) {
+    const {data} = await cloudWalletApi.delete(`${endpoints.WALLET_CREDENTIALS}/${VCId}`)
+
+    return data;
   }
 
   storeAccessAndDidTokens(accessToken: string, did: string) {
@@ -30,9 +68,8 @@ export class ClientApiService {
   }
 
   static setAuthorizationBearer = (accessToken: string) => {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    cloudWalletApi.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   }
-
 
   static _saveAccessTokenToLocalStorage(accessToken: string) {
     try {
@@ -42,9 +79,25 @@ export class ClientApiService {
     }
   }
 
+  static _removeAccessTokenToLocalStorage() {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   static _saveDidTokenToLocalStorage(did: string) {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY.DID_TOKEN, did)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  static _removeDidTokenToLocalStorage() {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY.DID_TOKEN)
     } catch (err) {
       console.error(err)
     }

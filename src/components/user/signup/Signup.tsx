@@ -4,14 +4,14 @@ import React, {useContext, useState} from 'react'
 import 'components/user/signup/Signup.scss'
 import {Button, FormGroup, FormControl, FormLabel, FormCheck, InputGroup} from 'react-bootstrap'
 import ApiService, {ClientApiService} from 'utils/apiService';
-import {AuthContext} from 'auth/context';
+import {AppContext} from 'context/app';
 
 const UserSignup = () => {
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [isCheckboxChecked, setIsCheckboxChecked] = useState<boolean>(false)
-  const {authState, setAuthState} = useContext(AuthContext);
+  const {setAppState} = useContext(AppContext);
   const history = useHistory();
 
   const onSubmit = async (event: React.FormEvent) => {
@@ -32,7 +32,7 @@ const UserSignup = () => {
         ApiService.storeAccessAndDidTokens(accessToken, did);
         ClientApiService.setAuthorizationBearer(accessToken);
 
-        setAuthState(prevState => {
+        setAppState(prevState => {
           return {
             ...prevState,
             isAuthenticated: true,
@@ -42,7 +42,7 @@ const UserSignup = () => {
           }
         })
 
-        //history.push(routes.ROOT)
+        history.push(routes.ROOT);
       } else {
         // @TODO
         //props.history.push('/confirm-signup', { username, token })

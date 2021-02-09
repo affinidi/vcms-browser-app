@@ -5,7 +5,7 @@
   padding: 75px 40px;
   font-family: Poppins, sans-serif;
   font-style: normal;
-  margin: 30px 0;
+  margin-bottom: 30px;
 
   .title {
     font-weight: 600;
@@ -80,6 +80,10 @@
 
     &--slim {
       max-width: 450px;
+    }
+
+    &--large {
+      max-width: 1400px;
     }
   }
 }

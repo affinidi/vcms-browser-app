@@ -1,28 +1,28 @@
 import React, {useContext, useState} from 'react'
 import {Button, FormGroup, FormControl, FormLabel} from 'react-bootstrap'
-import 'components/user/signup/Signup.scss'
-import ApiService from 'utils/apiService';
-import {AuthContext} from 'auth/context';
+import ApiService, {ClientApiService} from 'utils/apiService';
+import {AppContext} from 'context/app';
 import {useHistory} from 'react-router-dom';
 import {routes} from 'constants/routes';
 
-const UserSignup = () => {
+const UserLogin = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const {authState, setAuthState} = useContext(AuthContext);
+  const {setAppState} = useContext(AppContext);
   const history = useHistory();
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
-      const tokenData = await ApiService.loginWithUsernameAndPassword(username, password)
+      const tokenData = await ApiService.logIn(username, password)
 
       const {accessToken, did} = tokenData;
 
       ApiService.storeAccessAndDidTokens(accessToken, did);
+      ClientApiService.setAuthorizationBearer(accessToken);
 
-      setAuthState(prevState => {
+      setAppState(prevState => {
         return {
           ...prevState,
           isAuthenticated: true,
@@ -71,4 +71,4 @@ const UserSignup = () => {
   )
 }
 
-export default UserSignup;
+export default UserLogin;
