@@ -1,4 +1,4 @@
-import LOCAL_STORAGE_KEY from 'utils/consts';
+import LOCAL_STORAGE_KEY from 'constants/localstorage';
 import {cloudWalletApi, issuerApi, verifierApi} from 'utils/api';
 import {endpoints} from 'constants/endpoints';
 

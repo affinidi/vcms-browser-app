@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import LayoutHeaderNavigation from 'components/layout/header/navigation/Navigation';
 import Router from 'components/router/Router';
 import {AppContext, appContextDefaultValue, AppContextState} from 'context/app';
-import LOCAL_STORAGE_KEY from 'utils/consts';
+import LOCAL_STORAGE_KEY from 'constants/localstorage';
 import {ClientApiService} from 'utils/apiService';
-import {apuInstances} from 'utils/api';
+import {apiInstances} from 'utils/api';
 import {decodeAccessToken} from 'utils/jwt';
 
 function App() {
@@ -15,6 +15,27 @@ function App() {
   useEffect(() => {
     const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
     const didToken = localStorage.getItem(LOCAL_STORAGE_KEY.DID_TOKEN);
+
+    if( accessToken ) {
+      const jwtToken = decodeAccessToken(accessToken);
+
+      if( (jwtToken.exp * 1000) <= new Date().getTime() ) {
+
+        ClientApiService._removeAccessTokenToLocalStorage()
+        ClientApiService._removeDidTokenToLocalStorage()
+
+        alert('Your JWT token has expired. Please, log in again.')
+
+        setAppState(prevState => {
+          return {
+            ...prevState,
+            isAuthenticated: false,
+          }
+        })
+
+        return;
+      }
+    }
 
     if( accessToken && didToken ) {
       ClientApiService.setAuthorizationBearer(accessToken);
@@ -30,7 +51,7 @@ function App() {
       })
     }
 
-    apuInstances.forEach(instance => {
+    apiInstances.forEach(instance => {
       /**
        * In case of 401 HTTP responses, remove tokens from localstorage
        * and reset app context state (basically, log out user on client side).
@@ -41,6 +62,8 @@ function App() {
         if (401 === error.response.status) {
           ClientApiService._removeAccessTokenToLocalStorage()
           ClientApiService._removeDidTokenToLocalStorage()
+
+          alert('Your JWT token has expired. Please, log in again.')
 
           setAppState({
             ...appState,

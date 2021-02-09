@@ -7,7 +7,6 @@ const env = decodeEnv(process.env.REACT_APP_ENVIRONMENT || process.env.NODE_ENV)
 
 const envConfig = {
   env,
-  apiKey: process.env.REACT_APP_API_KEY,
   accessApiKey: process.env.REACT_APP_API_KEY_HASH,
   messagesBaseUrl: `https://affinidi-messages.${env}.affinity-project.org`,
 };

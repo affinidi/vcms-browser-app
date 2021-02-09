@@ -5,10 +5,10 @@ interface AccessToken {
   event_id: string,
   token_use: string,
   scope: string,
-  auth_time: Date,
+  auth_time: number,
   iss: string,
-  exp: Date,
-  iat: Date,
+  exp: number,
+  iat: number,
   jti: string,
   client_id: string,
   username: string

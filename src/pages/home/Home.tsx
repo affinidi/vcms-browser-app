@@ -1,24 +1,22 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {AppContext} from 'context/app';
-import {issuerApi} from 'utils/api';
 import {Button} from 'react-bootstrap';
 import 'pages/home/Home.scss'
-import {endpoints} from 'constants/endpoints';
-import ApiService, {ClientApiService} from 'utils/apiService';
+import {ClientApiService} from 'utils/apiService';
 import employmentVcData from 'utils/vc-data-examples/employment';
 
 interface State {
   currentUnsignedVC: any,
   currentSignedVC: any,
-  isCurrentVCSigned: boolean,
-  verifiedVCs: undefined | null | any[]
+  isCurrentVCVerified: boolean,
+  verifiedVCs: undefined | any[]
 }
 
 const HomePage = () => {
   const [state, setState] = useState<State>({
     currentUnsignedVC: null,
     currentSignedVC: null,
-    isCurrentVCSigned: false,
+    isCurrentVCVerified: false,
     verifiedVCs: undefined
   })
   const {appState} = useContext(AppContext);
@@ -30,7 +28,7 @@ const HomePage = () => {
 
         setState({
           ...state,
-          verifiedVCs: arrayOfVerifiedVCs && arrayOfVerifiedVCs.length ? [...arrayOfVerifiedVCs] : null
+          verifiedVCs: [...arrayOfVerifiedVCs]
         })
       } catch (error) {
         console.log(error.message);
@@ -50,7 +48,9 @@ const HomePage = () => {
 
       setState({
         ...state,
-        currentUnsignedVC: unsignedVC
+        currentUnsignedVC: unsignedVC,
+        currentSignedVC: null,
+        isCurrentVCVerified: false
       })
 
       alert('Unsigned VC successfully created.');
@@ -82,7 +82,7 @@ const HomePage = () => {
 
       setState({
         ...state,
-        isCurrentVCSigned: true,
+        isCurrentVCVerified: true,
       })
 
       alert('Signed VC successfully verified.');
@@ -100,9 +100,7 @@ const HomePage = () => {
 
         setState({
           ...state,
-          verifiedVCs: [...oldVerifiedVCs, state.currentSignedVC],
-          currentUnsignedVC: null,
-          currentSignedVC: null
+          verifiedVCs: [...oldVerifiedVCs, state.currentSignedVC]
         })
       }
 
@@ -116,6 +114,11 @@ const HomePage = () => {
     try {
       if( state.verifiedVCs ) {
         await ClientApiService.deleteVerifiedVC(state.verifiedVCs[index].id);
+
+        setState({
+          ...state,
+          verifiedVCs: state.verifiedVCs.filter((value, idx) => idx !== index)
+        })
 
         alert('Verified VC successfully deleted from your cloud wallet.');
       }
@@ -149,9 +152,9 @@ const HomePage = () => {
           <div className='tutorial__column-steps'>
             <div className='tutorial__step'>
               <span className='tutorial__step-text'>
-                <strong>Step 4:</strong> Store verified VC
+                <strong>Step 3:</strong> Store signed VC
               </span>
-              <Button onClick={storeVerifiedVC}>Store verified VC</Button>
+              <Button onClick={storeVerifiedVC}>Store signed VC</Button>
             </div>
 
             <h5 className='font-weight-bold'>Current VC:{(!state.currentUnsignedVC && !state.currentSignedVC) && (' None')}</h5>
@@ -159,11 +162,11 @@ const HomePage = () => {
               <>
                 <div>
                   <span className='tutorial__status'>
-                    <input type='checkbox' readOnly checked={!!state.currentSignedVC} />
+                    <input className='tutorial__status-input' type='checkbox' readOnly checked={!!state.currentSignedVC} />
                     <label>Signed</label>
                   </span>
                   <span className='tutorial__status'>
-                    <input type='checkbox' readOnly checked={state.isCurrentVCSigned} />
+                    <input className='tutorial__status-input' type='checkbox' readOnly checked={state.isCurrentVCVerified} />
                     <label>Verified</label>
                   </span>
                 </div>
@@ -179,7 +182,7 @@ const HomePage = () => {
             <div className='tutorial__verified-vcs'>
               <h5 className='font-weight-bold'>Already verified VCs:</h5>
               {state.verifiedVCs === undefined && ('Loading...')}
-              {state.verifiedVCs === null && ('You didn\'t verify any VCs')}
+              {state.verifiedVCs && !state.verifiedVCs.length && ('You didn\'t store any signed VCs')}
               {state.verifiedVCs && state.verifiedVCs.map((verifiedVC, index) => {
                 return (
                   <div key={index} className='tutorial__textarea-block'>
@@ -189,6 +192,7 @@ const HomePage = () => {
                       name='credentials'
                       value={JSON.stringify(verifiedVC, undefined, '\t')}
                     />
+                    <Button className='tutorial__delete-button' onClick={() => deleteVerifiedVC(index)}>Delete this VC</Button>
                   </div>
                 )
               })}
@@ -200,7 +204,7 @@ const HomePage = () => {
           <div className='tutorial__column-steps'>
             <div className='tutorial__step'>
               <span className='tutorial__step-text'>
-                <strong>Step 3:</strong> Verify VC
+                <strong>Step 4:</strong> Verify VC
               </span>
               <Button onClick={verifyVC}>Verify signed VC</Button>
             </div>
