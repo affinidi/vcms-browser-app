@@ -110,23 +110,6 @@ const HomePage = () => {
     }
   }
 
-  // CORS issue, error message:
-  // Access to XMLHttpRequest at 'https://cloud-wallet-api.staging.affinity-project.org/api/v1/wallet/credentials/{id}'
-  // from origin 'http://localhost:3000' has been blocked by CORS policy: Method DELETE is not allowed by
-  // Access-Control-Allow-Methods in preflight response.
-  // TODO wait to be fixed
-  const deleteVerifiedVC = async (index: number) => {
-    try {
-      if( state.verifiedVCs ) {
-        await ClientApiService.deleteVerifiedVC(state.verifiedVCs[index].id);
-
-        alert('Verified VC successfully deleted from your cloud wallet.');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
   return (
     <div>
       <div className='tutorial'>
