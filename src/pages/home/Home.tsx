@@ -8,7 +8,7 @@ import employmentVcData from 'utils/vc-data-examples/employment';
 interface State {
   currentUnsignedVC: any,
   currentSignedVC: any,
-  isCurrentVCSigned: boolean,
+  isCurrentVCVerified: boolean,
   verifiedVCs: undefined | null | any[]
 }
 
@@ -16,7 +16,7 @@ const HomePage = () => {
   const [state, setState] = useState<State>({
     currentUnsignedVC: null,
     currentSignedVC: null,
-    isCurrentVCSigned: false,
+    isCurrentVCVerified: false,
     verifiedVCs: undefined
   })
   const {appState} = useContext(AppContext);
@@ -48,7 +48,9 @@ const HomePage = () => {
 
       setState({
         ...state,
-        currentUnsignedVC: unsignedVC
+        currentUnsignedVC: unsignedVC,
+        currentSignedVC: null,
+        isCurrentVCVerified: false
       })
 
       alert('Unsigned VC successfully created.');
@@ -80,7 +82,7 @@ const HomePage = () => {
 
       setState({
         ...state,
-        isCurrentVCSigned: true,
+        isCurrentVCVerified: true,
       })
 
       alert('Signed VC successfully verified.');
@@ -98,13 +100,28 @@ const HomePage = () => {
 
         setState({
           ...state,
-          verifiedVCs: [...oldVerifiedVCs, state.currentSignedVC],
-          currentUnsignedVC: null,
-          currentSignedVC: null
+          verifiedVCs: [...oldVerifiedVCs, state.currentSignedVC]
         })
       }
 
       alert('Verified VC successfully stored in your cloud wallet.');
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  const deleteVerifiedVC = async (index: number) => {
+    try {
+      if( state.verifiedVCs ) {
+        await ClientApiService.deleteVerifiedVC(state.verifiedVCs[index].id);
+
+        setState({
+          ...state,
+          verifiedVCs: state.verifiedVCs.filter((value, idx) => idx !== index)
+        })
+
+        alert('Verified VC successfully deleted from your cloud wallet.');
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -135,9 +152,9 @@ const HomePage = () => {
           <div className='tutorial__column-steps'>
             <div className='tutorial__step'>
               <span className='tutorial__step-text'>
-                <strong>Step 4:</strong> Store verified VC
+                <strong>Step 3:</strong> Store signed VC
               </span>
-              <Button onClick={storeVerifiedVC}>Store verified VC</Button>
+              <Button onClick={storeVerifiedVC}>Store signed VC</Button>
             </div>
 
             <h5 className='font-weight-bold'>Current VC:{(!state.currentUnsignedVC && !state.currentSignedVC) && (' None')}</h5>
@@ -145,11 +162,11 @@ const HomePage = () => {
               <>
                 <div>
                   <span className='tutorial__status'>
-                    <input type='checkbox' readOnly checked={!!state.currentSignedVC} />
+                    <input className='tutorial__status-input' type='checkbox' readOnly checked={!!state.currentSignedVC} />
                     <label>Signed</label>
                   </span>
                   <span className='tutorial__status'>
-                    <input type='checkbox' readOnly checked={state.isCurrentVCSigned} />
+                    <input className='tutorial__status-input' type='checkbox' readOnly checked={state.isCurrentVCVerified} />
                     <label>Verified</label>
                   </span>
                 </div>
@@ -175,6 +192,7 @@ const HomePage = () => {
                       name='credentials'
                       value={JSON.stringify(verifiedVC, undefined, '\t')}
                     />
+                    <Button className='tutorial__delete-button' onClick={() => deleteVerifiedVC(index)}>Delete this VC</Button>
                   </div>
                 )
               })}
@@ -186,7 +204,7 @@ const HomePage = () => {
           <div className='tutorial__column-steps'>
             <div className='tutorial__step'>
               <span className='tutorial__step-text'>
-                <strong>Step 3:</strong> Verify VC
+                <strong>Step 4:</strong> Verify VC
               </span>
               <Button onClick={verifyVC}>Verify signed VC</Button>
             </div>
