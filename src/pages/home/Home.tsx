@@ -174,7 +174,7 @@ const HomePage = () => {
                   className='tutorial__textarea'
                   readOnly
                   name='credentials'
-                  value={JSON.stringify(state.currentUnsignedVC, undefined, '\t')}
+                  value={JSON.stringify(state.currentSignedVC || state.currentUnsignedVC, undefined, '\t')}
                 />
               </>
             )}
