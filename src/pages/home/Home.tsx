@@ -9,7 +9,7 @@ interface State {
   currentUnsignedVC: any,
   currentSignedVC: any,
   isCurrentVCVerified: boolean,
-  verifiedVCs: undefined | null | any[]
+  verifiedVCs: undefined | any[]
 }
 
 const HomePage = () => {
@@ -28,7 +28,7 @@ const HomePage = () => {
 
         setState({
           ...state,
-          verifiedVCs: arrayOfVerifiedVCs && arrayOfVerifiedVCs.length ? [...arrayOfVerifiedVCs] : null
+          verifiedVCs: [...arrayOfVerifiedVCs]
         })
       } catch (error) {
         console.log(error.message);
@@ -182,7 +182,7 @@ const HomePage = () => {
             <div className='tutorial__verified-vcs'>
               <h5 className='font-weight-bold'>Already verified VCs:</h5>
               {state.verifiedVCs === undefined && ('Loading...')}
-              {state.verifiedVCs === null && ('You didn\'t verify any VCs')}
+              {state.verifiedVCs && !state.verifiedVCs.length && ('You didn\'t store any signed VCs')}
               {state.verifiedVCs && state.verifiedVCs.map((verifiedVC, index) => {
                 return (
                   <div key={index} className='tutorial__textarea-block'>
