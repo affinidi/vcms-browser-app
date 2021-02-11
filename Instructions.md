@@ -4,7 +4,7 @@ This is a step by step instructions that guides anyone to start using this githu
 
 ### Step 1
 
-Visit this [link](https://affinity-onboarding-frontend.staging.affinity-project.org/) to generate your API key and API Key Hash.
+Visit this [link](https://affinity-onboarding-frontend.staging.affinity-project.org/) to generate your API Key Hash.
 
 ![](https://github.com/affinityproject/vcms-browser-app/blob/shubham/instructions/apikey.JPG?raw=true)
 
@@ -55,3 +55,5 @@ Next you have to click on the `Issue unsigned VC` button under the `ISSUER` colu
 All stored VCs attached to a user account will be loaded and rendered on successful user login.
 
 ## Conclusion
+
+We hope that you were able to build your first VC. To learn more about the APIs visit ![affinidi.com/vcms](https://www.affinidi.com/vcms)
