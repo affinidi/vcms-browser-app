@@ -56,4 +56,4 @@ All stored VCs attached to a user account will be loaded and rendered on success
 
 ## Conclusion
 
-We hope that you were able to build your first VC. To learn more about the APIs visit ![affinidi.com/vcms](https://www.affinidi.com/vcms)
+We hope that you were able to build your first VC. To learn more about the APIs visit [affinidi.com/vcms](https://www.affinidi.com/vcms)
