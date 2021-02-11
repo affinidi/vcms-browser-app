@@ -20,8 +20,8 @@ export class ClientApiService {
   async logout() {
     const {data} = await cloudWalletApi.post(endpoints.LOGOUT)
 
-    ClientApiService._removeAccessTokenToLocalStorage()
-    ClientApiService._removeDidTokenToLocalStorage()
+    ClientApiService.removeAccessTokenToLocalStorage()
+    ClientApiService.removeDidTokenToLocalStorage()
 
     return data;
   }
@@ -63,15 +63,15 @@ export class ClientApiService {
   }
 
   storeAccessAndDidTokens(accessToken: string, did: string) {
-    ClientApiService._saveAccessTokenToLocalStorage(accessToken);
-    ClientApiService._saveDidTokenToLocalStorage(did);
+    ClientApiService.saveAccessTokenToLocalStorage(accessToken);
+    ClientApiService.saveDidTokenToLocalStorage(did);
   }
 
   static setAuthorizationBearer = (accessToken: string) => {
     cloudWalletApi.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   }
 
-  static _saveAccessTokenToLocalStorage(accessToken: string) {
+  static saveAccessTokenToLocalStorage(accessToken: string) {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN, accessToken)
     } catch (err) {
@@ -79,7 +79,7 @@ export class ClientApiService {
     }
   }
 
-  static _removeAccessTokenToLocalStorage() {
+  static removeAccessTokenToLocalStorage() {
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN)
     } catch (err) {
@@ -87,7 +87,7 @@ export class ClientApiService {
     }
   }
 
-  static _saveDidTokenToLocalStorage(did: string) {
+  static saveDidTokenToLocalStorage(did: string) {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY.DID_TOKEN, did)
     } catch (err) {
@@ -95,7 +95,7 @@ export class ClientApiService {
     }
   }
 
-  static _removeDidTokenToLocalStorage() {
+  static removeDidTokenToLocalStorage() {
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY.DID_TOKEN)
     } catch (err) {
