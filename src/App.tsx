@@ -7,6 +7,10 @@ import {ClientApiService} from 'utils/apiService';
 import {apiInstances} from 'utils/api';
 import {decodeAccessToken} from 'utils/jwt';
 
+/**
+ * Root stateful component which wraps our app with a simple context.
+ * It also checks if current access token (if any) is valid on app mount.
+ * */
 function App() {
   const [appState, setAppState] = useState<AppContextState>({
     ...appContextDefaultValue.appState
@@ -21,8 +25,8 @@ function App() {
 
       if( (jwtToken.exp * 1000) <= new Date().getTime() ) {
 
-        ClientApiService._removeAccessTokenToLocalStorage()
-        ClientApiService._removeDidTokenToLocalStorage()
+        ClientApiService.removeAccessTokenToLocalStorage()
+        ClientApiService.removeDidTokenToLocalStorage()
 
         alert('Your JWT token has expired. Please, log in again.')
 
@@ -60,8 +64,8 @@ function App() {
         return response;
       }, function (error) {
         if (401 === error.response.status) {
-          ClientApiService._removeAccessTokenToLocalStorage()
-          ClientApiService._removeDidTokenToLocalStorage()
+          ClientApiService.removeAccessTokenToLocalStorage()
+          ClientApiService.removeDidTokenToLocalStorage()
 
           alert('Your JWT token has expired. Please, log in again.')
 
