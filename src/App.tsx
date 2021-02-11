@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import LayoutHeaderNavigation from 'components/layout/header/navigation/Navigation';
 import Router from 'components/router/Router';
-import {AppContext, appContextDefaultValue, AppContextState} from 'context/app';
+import AppContext, {appContextDefaultValue, AppContextState} from 'context/app';
 import ApiService from 'utils/apiService';
 import {apiInstances} from 'utils/api';
 import {decodeAccessToken} from 'utils/jwt';

@@ -6,9 +6,9 @@ const issuerBaseUrl: string       = `https://affinity-issuer.${env}.affinity-pro
 const verifierBaseUrl: string     = `https://affinity-verifier.${env}.affinity-project.org/api/v1`
 
 /**
- * Create multiple axios instances with different base URLs for easier communication
- * with different services.
- * Every base URL is dependent on current environment.
+ * Create multiple axios instances with different base URLs for easier
+ * communication with different services.
+ * Base URLs are dependent on current environment.
  * */
 
 export const cloudWalletApi: AxiosInstance = axios.create({

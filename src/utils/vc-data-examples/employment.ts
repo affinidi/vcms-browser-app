@@ -1,5 +1,5 @@
 /**
- * Sample VC data for employment type.
+ * Sample VC data for the employment type.
  * */
 import {VCBuildUnsignedInput} from 'utils/apis';
 

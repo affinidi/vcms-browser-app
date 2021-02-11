@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {AppContext} from 'context/app';
+import AppContext from 'context/app';
 import {Button} from 'react-bootstrap';
 import 'pages/home/Home.scss'
 import ApiService from 'utils/apiService';
@@ -13,6 +13,10 @@ interface State {
   verifiedVCs: W3cCredential[] | null
 }
 
+/**
+ * Stateful component responsible for rendering the showcase of this app.
+ * The basic parts of SSI cycle are covered with this component.
+ * */
 const HomePage = () => {
   const [state, setState] = useState<State>({
     currentUnsignedVC: null,
@@ -22,6 +26,9 @@ const HomePage = () => {
   })
   const {appState} = useContext(AppContext);
 
+  /**
+   * Get stored VCs from user cloud wallet on component mount.
+   * */
   useEffect(() => {
     const getSavedVCs = async () => {
       try {
@@ -32,13 +39,16 @@ const HomePage = () => {
           verifiedVCs: [...arrayOfVerifiedVCs.credentials]
         })
       } catch (error) {
-        console.log(error.message);
+        console.log(error.message)
       }
     }
 
     getSavedVCs();
   }, []);
 
+  /**
+   * Function for issuing an unsigned employment VC.
+   * */
   const issueEmploymentPersonVC = async () => {
     try {
       const example = employmentVcData
@@ -56,10 +66,13 @@ const HomePage = () => {
 
       alert('Unsigned VC successfully created.');
     } catch (error) {
-      console.log(error.message)
+      ApiService.alertWithBrowserConsole(error.message);
     }
   }
 
+  /**
+   * Function for signing an unsigned VC.
+   * */
   const signVc = async () => {
     try {
       if( state.currentUnsignedVC ) {
@@ -78,10 +91,13 @@ const HomePage = () => {
         alert('No unsigned VC found. Please create one and try again.')
       }
     } catch (error) {
-      console.log(error.message);
+      ApiService.alertWithBrowserConsole(error.message);
     }
   }
 
+  /**
+   * Function for verifying a signed VC.
+   * */
   const verifyVC = async () => {
     try {
       if( state.currentSignedVC ) {
@@ -107,10 +123,13 @@ const HomePage = () => {
         alert('No signed VC found. Please sign a VC and try again.')
       }
     } catch (error) {
-      console.log(error.message);
+      ApiService.alertWithBrowserConsole(error.message);
     }
   }
 
+  /**
+   * Function for storing a signed VC into the user cloud wallet.
+   * */
   const storeSignedVC = async () => {
     try {
       if( state.currentSignedVC ) {
@@ -133,14 +152,17 @@ const HomePage = () => {
         alert('No signed VC found. Please sign a VC and try again.');
       }
     } catch (error) {
-      console.log(error.message);
+      ApiService.alertWithBrowserConsole(error.message);
     }
   }
 
-  const deleteVerifiedVC = async (index: number) => {
+  /**
+   * Function for deleting a stored VC.
+   * */
+  const deleteStoredVC = async (index: number) => {
     try {
       if( state.verifiedVCs ) {
-        await ApiService.deleteVerifiedVC(state.verifiedVCs[index].id);
+        await ApiService.deleteStoredVC(state.verifiedVCs[index].id);
 
         setState({
           ...state,
@@ -150,7 +172,7 @@ const HomePage = () => {
         alert('Verified VC successfully deleted from your cloud wallet.');
       }
     } catch (error) {
-      console.log(error.message);
+      ApiService.alertWithBrowserConsole(error.message);
     }
   }
 
@@ -220,7 +242,7 @@ const HomePage = () => {
                     name='credentials'
                     value={JSON.stringify(verifiedVC, undefined, '\t')}
                   />
-                  <Button className='tutorial__delete-button' onClick={() => deleteVerifiedVC(index)}>Delete this VC</Button>
+                  <Button className='tutorial__delete-button' onClick={() => deleteStoredVC(index)}>Delete this VC</Button>
                 </div>
               )
             })}

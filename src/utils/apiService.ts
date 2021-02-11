@@ -115,7 +115,7 @@ export default class ApiService {
    * Method for deleting stored VC.
    * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/DeleteCredential.
    * */
-  static async deleteVerifiedVC(VCId: string) {
+  static async deleteStoredVC(VCId: string) {
     const {data} = await cloudWalletApi.delete(`${endpoints.WALLET_CREDENTIALS}/${VCId}`)
 
     return data;
@@ -213,5 +213,16 @@ export default class ApiService {
     } catch (err) {
       console.error(err)
     }
+  }
+
+  /**
+   * Method for showing the user a generic message when a request fails or an error has been thrown.
+   * */
+  static alertWithBrowserConsole(consoleMessage: null | string = null, alertMessage?: string) {
+    if( consoleMessage ) {
+      console.log(consoleMessage);
+    }
+
+    alert(alertMessage || 'There has been an issue processing your request. Please check the browser console.')
   }
 }

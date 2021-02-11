@@ -3,7 +3,7 @@ import {Link, NavLink} from 'react-router-dom';
 import {Container, Nav, Navbar, NavbarBrand} from 'react-bootstrap'
 import {routes} from 'constants/routes'
 import 'components/layout/header/navigation/Navigation.scss'
-import {AppContext} from 'context/app';
+import AppContext from 'context/app';
 import UserLogout from 'components/user/logout/Logout';
 
 /**

@@ -1,3 +1,7 @@
+/**
+ * File containing various API endpoints.
+ * */
+
 interface Endpoints {
   SIGNUP: string,
   LOGIN: string,

@@ -1,3 +1,7 @@
+/**
+ * File containing various browser routes.
+ * */
+
 interface Routes {
   ROOT: string,
   LOGIN: string,

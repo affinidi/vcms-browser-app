@@ -1,11 +1,14 @@
 import {Link, useHistory} from 'react-router-dom'
 import {routes} from 'constants/routes'
 import React, {useContext, useState} from 'react'
-import 'components/user/signup/Signup.scss'
 import {Button, FormGroup, FormControl, FormLabel, FormCheck, InputGroup} from 'react-bootstrap'
-import ApiService from 'utils/apiService';
-import {AppContext} from 'context/app';
+import ApiService from 'utils/apiService'
+import AppContext from 'context/app'
+import 'components/user/signup/Signup.scss'
 
+/**
+ * Stateful component responsible for rendering user registration form.
+ * */
 const UserSignup = () => {
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -14,18 +17,25 @@ const UserSignup = () => {
   const {setAppState} = useContext(AppContext);
   const history = useHistory();
 
+  /**
+   * Function executed on form submit if form validation is passed.
+   * */
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    // notify user if "password" and "confirm password" fields don't match
     if (password !== confirmPassword) {
       alert('Passwords don\'t match!')
       return
     }
 
     try {
+      // perform user registration
       const tokenData = await ApiService.signUp(username, password)
+      // check if user used arbitrary username, instead of a phone number or email address
       const isUsername = !username.startsWith('+') && username.indexOf('@') === -1
 
+      // this app currently supports arbitrary username
       if (isUsername) {
         const {accessToken, did} = tokenData;
 
@@ -42,20 +52,25 @@ const UserSignup = () => {
         })
 
         history.push(routes.ROOT);
-      } else {
-        // @TODO
-        //props.history.push('/confirm-signup', { username, token })
       }
 
     } catch (error) {
-      alert(error.message)
+      ApiService.alertWithBrowserConsole(error.message)
     }
   }
 
+  /**
+   * Simple form validation function.
+   * It will check if username is not empty, if both "password" and "confirm password" fields have minimum 6 characters,
+   * and if "terms and conditions" checkbox is checked.
+   * */
   function validateForm() {
-    return username.length > 0 && password.length > 0 && confirmPassword.length > 0 && isCheckboxChecked
+    return username.trim().length > 0 && password.trim().length >= 6 && confirmPassword.trim().length >= 6 && isCheckboxChecked
   }
 
+  /**
+   * Function for toggling "terms and conditions" checkbox.
+   * */
   function toggleCheckbox() {
     isCheckboxChecked ? setIsCheckboxChecked(false) : setIsCheckboxChecked(true)
   }
@@ -73,7 +88,7 @@ const UserSignup = () => {
         />
       </FormGroup>
       <FormGroup controlId='password'>
-        <FormLabel className='label'>Password</FormLabel>
+        <FormLabel className='label'>Password (minimum 6 characters)</FormLabel>
         <FormControl
           className='input'
           type='password'

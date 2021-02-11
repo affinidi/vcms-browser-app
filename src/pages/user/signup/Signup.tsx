@@ -1,6 +1,9 @@
 import React from 'react';
 import UserSignup from 'components/user/signup/Signup';
 
+/**
+ * Stateless component responsible for rendering the registration page.
+ * */
 const UserSignupPage = () => {
   return (
     <div className='page-form page-form--slim'>
