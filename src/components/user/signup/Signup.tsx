@@ -3,7 +3,7 @@ import {routes} from 'constants/routes'
 import React, {useContext, useState} from 'react'
 import 'components/user/signup/Signup.scss'
 import {Button, FormGroup, FormControl, FormLabel, FormCheck, InputGroup} from 'react-bootstrap'
-import ApiService, {ClientApiService} from 'utils/apiService';
+import ApiService from 'utils/apiService';
 import {AppContext} from 'context/app';
 
 const UserSignup = () => {
@@ -29,8 +29,7 @@ const UserSignup = () => {
       if (isUsername) {
         const {accessToken, did} = tokenData;
 
-        ApiService.storeAccessAndDidTokens(accessToken, did);
-        ClientApiService.setAuthorizationBearer(accessToken);
+        ApiService.clientSideLogIn(accessToken, did);
 
         setAppState(prevState => {
           return {

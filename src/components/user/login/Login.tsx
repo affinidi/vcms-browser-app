@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react'
 import {Button, FormGroup, FormControl, FormLabel} from 'react-bootstrap'
-import ApiService, {ClientApiService} from 'utils/apiService';
+import ApiService from 'utils/apiService';
 import {AppContext} from 'context/app';
 import {useHistory} from 'react-router-dom';
 import {routes} from 'constants/routes';
@@ -19,8 +19,7 @@ const UserLogin = () => {
 
       const {accessToken, did} = tokenData;
 
-      ApiService.storeAccessAndDidTokens(accessToken, did);
-      ClientApiService.setAuthorizationBearer(accessToken);
+      ApiService.clientSideLogIn(accessToken, did);
 
       setAppState(prevState => {
         return {

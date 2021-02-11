@@ -23,7 +23,7 @@ describe('decodeEnv', () => {
 
   it('returns staging if given anything else', () => {
     expect(decodeEnv('')).toBe('staging')
-    expect(decodeEnv(null)).toBe('staging')
+    expect(decodeEnv('production')).toBe('prod')
     expect(decodeEnv('test')).toBe('staging')
   })
 })

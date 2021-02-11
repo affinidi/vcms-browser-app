@@ -2,14 +2,13 @@ import React, {useEffect, useState} from 'react';
 import LayoutHeaderNavigation from 'components/layout/header/navigation/Navigation';
 import Router from 'components/router/Router';
 import {AppContext, appContextDefaultValue, AppContextState} from 'context/app';
-import LOCAL_STORAGE_KEY from 'constants/localstorage';
-import {ClientApiService} from 'utils/apiService';
+import ApiService from 'utils/apiService';
 import {apiInstances} from 'utils/api';
 import {decodeAccessToken} from 'utils/jwt';
+import 'App.scss';
 
 /**
  * Root stateful component which wraps our app with a simple context.
- * It also checks if current access token (if any) is valid on app mount.
  * */
 function App() {
   const [appState, setAppState] = useState<AppContextState>({
@@ -17,16 +16,19 @@ function App() {
   })
 
   useEffect(() => {
-    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-    const didToken = localStorage.getItem(LOCAL_STORAGE_KEY.DID_TOKEN);
+    const accessToken = ApiService.getAccessTokenToLocalStorage();
+    const didToken = ApiService.getDidTokenToLocalStorage();
 
     if( accessToken ) {
       const jwtToken = decodeAccessToken(accessToken);
 
+      /**
+       * On component mount, check if user access token is valid.
+       * If not, log out user on client side.
+       * */
       if( (jwtToken.exp * 1000) <= new Date().getTime() ) {
 
-        ClientApiService.removeAccessTokenToLocalStorage()
-        ClientApiService.removeDidTokenToLocalStorage()
+        ApiService.removeAccessAndDidTokens()
 
         alert('Your JWT token has expired. Please, log in again.')
 
@@ -39,20 +41,22 @@ function App() {
 
         return;
       }
-    }
+      else {
+        /**
+         * Log in user on client side, set authorization bearer token.
+         * */
+        ApiService.setAuthorizationBearer(accessToken);
 
-    if( accessToken && didToken ) {
-      ClientApiService.setAuthorizationBearer(accessToken);
-
-      setAppState(prevState => {
-        return {
-          ...prevState,
-          didToken,
-          accessToken,
-          isAuthenticated: true,
-          username: decodeAccessToken(accessToken).username
-        }
-      })
+        setAppState(prevState => {
+          return {
+            ...prevState,
+            didToken: didToken || null,
+            accessToken,
+            isAuthenticated: true,
+            username: decodeAccessToken(accessToken).username
+          }
+        })
+      }
     }
 
     apiInstances.forEach(instance => {
@@ -64,8 +68,8 @@ function App() {
         return response;
       }, function (error) {
         if (401 === error.response.status) {
-          ClientApiService.removeAccessTokenToLocalStorage()
-          ClientApiService.removeDidTokenToLocalStorage()
+          ApiService.removeAccessTokenFromLocalStorage()
+          ApiService.removeDidTokenFromLocalStorage()
 
           alert('Your JWT token has expired. Please, log in again.')
 
