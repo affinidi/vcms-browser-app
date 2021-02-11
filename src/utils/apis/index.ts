@@ -47,13 +47,6 @@ export interface W3cCredential {
   proof: W3cProof,
 }
 
-export interface W3cCredentialStatus {
-  id: string,
-  type: string,
-  revocationListIndex: string,
-  revocationListCredential: string,
-}
-
 export interface W3cProof {
   type?: string,
   created?: string,
