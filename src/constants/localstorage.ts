@@ -1,3 +1,7 @@
+/**
+ * File containing various localstorage name references used by this app.
+ * */
+
 interface Constants {
   ACCESS_TOKEN: string,
   DID_TOKEN: string

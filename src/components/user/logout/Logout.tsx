@@ -1,10 +1,17 @@
 import React, {useContext} from 'react'
 import ApiService from 'utils/apiService';
-import {AppContext, appContextDefaultValue} from 'context/app';
+import AppContext, {appContextDefaultValue} from 'context/app';
 
+/**
+ * Stateless component responsible for logging out user.
+ * */
 const UserLogout = () => {
   const {appState, setAppState} = useContext(AppContext)
 
+  /**
+   * Function for logging out user and updating app state to
+   * reflect that action.
+   * */
   const userLogOut = async () => {
     try {
       await ApiService.logout()
@@ -17,7 +24,7 @@ const UserLogout = () => {
       })
 
     } catch (error) {
-      console.log(error.message)
+      ApiService.alertWithBrowserConsole(error.message)
     }
   }
 

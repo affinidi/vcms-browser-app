@@ -1,4 +1,9 @@
-const employmentVcData = {
+/**
+ * Sample VC data for the employment type.
+ * */
+import {VCBuildUnsignedInput} from 'utils/apis';
+
+const employmentVcData: VCBuildUnsignedInput = {
   type: 'EmploymentCredentialPersonV1',
   data: {
     '@type': ['Person', 'PersonE', 'EmploymentPerson'],

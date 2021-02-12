@@ -1,18 +1,15 @@
 import axios, {AxiosInstance} from 'axios';
 import config from 'utils/config';
-const { accessApiKey, env } = config
-const registryBaseUrl: string     = `https://affinity-registry.${env}.affinity-project.org/api/v1`
+const {accessApiKey, env} = config
 const cloudWalletBaseUrl: string  = `https://cloud-wallet-api.${env}.affinity-project.org/api/v1`
 const issuerBaseUrl: string       = `https://affinity-issuer.${env}.affinity-project.org/api/v1`
 const verifierBaseUrl: string     = `https://affinity-verifier.${env}.affinity-project.org/api/v1`
 
-export const registryApi: AxiosInstance = axios.create({
-  baseURL: registryBaseUrl,
-  headers: {
-    'Api-Key': accessApiKey,
-    'Content-Type': 'application/json',
-  },
-});
+/**
+ * Create multiple axios instances with different base URLs for easier
+ * communication with different services.
+ * Base URLs are dependent on current environment.
+ * */
 
 export const cloudWalletApi: AxiosInstance = axios.create({
   baseURL: cloudWalletBaseUrl,
@@ -38,4 +35,4 @@ export const verifierApi: AxiosInstance = axios.create({
   },
 });
 
-export const apiInstances = [registryApi, cloudWalletApi, issuerApi, verifierApi];
+export const apiInstances = [cloudWalletApi, issuerApi, verifierApi];

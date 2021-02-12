@@ -4,6 +4,9 @@ import studentIcon from 'assets/images/icons/student.svg'
 import calculatorIcon from 'assets/images/icons/calculator.svg'
 import 'pages/intro/Intro.scss'
 
+/**
+ * Stateless component responsible for rendering a simple SSI introduction screen.
+ * */
 const IntroPage = () => {
   return (
     <div className='intro page-form page-form--large'>
@@ -33,11 +36,11 @@ const IntroPage = () => {
         <div className='intro__example-role-directions'>
           <div className='intro__example-top-direction'>
             <span className='intro__example-direction-text'>Issues Credential</span>
-            <span className='intro__example-direction-arrow'></span>
+            <span className='intro__example-direction-arrow'/>
           </div>
           <div className='intro__example-bottom-direction'>
             <span className='intro__example-direction-text'>Asks for Credential</span>
-            <span className='intro__example-direction-arrow intro__example-direction-arrow--left'></span>
+            <span className='intro__example-direction-arrow intro__example-direction-arrow--left'/>
           </div>
         </div>
         <div className='intro__example-role'>
@@ -48,7 +51,7 @@ const IntroPage = () => {
         <div className='intro__example-role-directions'>
           <div className='intro__example-top-direction'>
             <span className='intro__example-direction-text'>Presents Credential</span>
-            <span className='intro__example-direction-arrow'></span>
+            <span className='intro__example-direction-arrow'/>
           </div>
         </div>
         <div className='intro__example-role'>

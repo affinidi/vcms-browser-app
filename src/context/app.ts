@@ -12,6 +12,11 @@ export interface AppContextProperties {
   setAppState: Dispatch<SetStateAction<AppContextState>>
 }
 
+/**
+ * Centralized object for storing important app properties.
+ * For the purpose of this app, React Context was used instead of a
+ * store manager like React Redux.
+ * */
 export const appContextDefaultValue: AppContextProperties = {
   appState: {
     accessToken: null,
@@ -22,4 +27,7 @@ export const appContextDefaultValue: AppContextProperties = {
   setAppState: state => {}
 }
 
-export const AppContext = React.createContext<AppContextProperties>(appContextDefaultValue);
+// expose app context
+const AppContext = React.createContext<AppContextProperties>(appContextDefaultValue);
+
+export default AppContext

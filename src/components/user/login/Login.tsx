@@ -1,26 +1,32 @@
 import React, {useContext, useState} from 'react'
 import {Button, FormGroup, FormControl, FormLabel} from 'react-bootstrap'
-import ApiService, {ClientApiService} from 'utils/apiService';
-import {AppContext} from 'context/app';
+import ApiService from 'utils/apiService';
+import AppContext from 'context/app';
 import {useHistory} from 'react-router-dom';
 import {routes} from 'constants/routes';
 
+/**
+ * Stateful component responsible for user login.
+ * It renders a simple form with "username" and "password" fields.
+ * */
 const UserLogin = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const {setAppState} = useContext(AppContext);
   const history = useHistory();
 
+  /**
+   * Function executed on valid form submit.
+   * If login was successful, it will store access and DID tokens into localstorage,
+   * update app state and redirect to "/".
+   * */
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
-      const tokenData = await ApiService.logIn(username, password)
+      const {accessToken, did} = await ApiService.logIn(username, password)
 
-      const {accessToken, did} = tokenData;
-
-      ApiService.storeAccessAndDidTokens(accessToken, did);
-      ClientApiService.setAuthorizationBearer(accessToken);
+      ApiService.clientSideLogIn(accessToken, did);
 
       setAppState(prevState => {
         return {
@@ -35,10 +41,13 @@ const UserLogin = () => {
       history.push(routes.ROOT);
 
     } catch (error) {
-      console.log(error.message)
+      ApiService.alertWithBrowserConsole(error.message)
     }
   }
 
+  /**
+   * Simple form validation function.
+   * */
   function validateForm() {
     return username.length > 0 && password.length > 0
   }

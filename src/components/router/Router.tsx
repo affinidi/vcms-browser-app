@@ -5,16 +5,20 @@ import NotFoundPage from 'pages/not-found/NotFound';
 import UserSignupPage from 'pages/user/signup/Signup';
 import UserLoginPage from 'pages/user/login/Login';
 import HomePage from 'pages/home/Home';
-import IssuerPage from 'pages/issuer/Issuer';
-import VerifierPage from 'pages/verifier/Verifier';
-import Holder from 'pages/holder/Holder';
 import IntroPage from 'pages/intro/Intro';
 
 interface Props {
   isUserAuthenticated: boolean
 }
 
+/**
+ * Stateless component responsible for rendering public or private routes.
+ * If user is authenticated, render private routes, otherwise render public routes.
+ * Small note - there is a "/intro" route (not present in any navigation), which shows a simple textual and graphical overview
+ * of what SSI is.
+ * */
 const Router = ({isUserAuthenticated}: Props) => {
+  // render public routes
   if( !isUserAuthenticated ) {
     return (
       <Switch>
@@ -25,15 +29,13 @@ const Router = ({isUserAuthenticated}: Props) => {
     )
   }
 
+  // render private routes
   return (
     <Switch>
       <Route exact path={routes.ROOT} component={HomePage} />
       <Route exact path={routes.SIGNUP} component={UserSignupPage} />
       <Route exact path={routes.LOGIN} component={UserLoginPage} />
-      <Route exact path={routes.ISSUER} component={IssuerPage} />
-      <Route exact path={routes.VERIFIER} component={VerifierPage} />
       <Route exact path={routes.INTRO} component={IntroPage} />
-      <Route exact path={routes.HOLDER} component={Holder} />
       <Route component={NotFoundPage}/>
     </Switch>
   )

@@ -3,9 +3,15 @@ import {Link, NavLink} from 'react-router-dom';
 import {Container, Nav, Navbar, NavbarBrand} from 'react-bootstrap'
 import {routes} from 'constants/routes'
 import 'components/layout/header/navigation/Navigation.scss'
-import {AppContext} from 'context/app';
+import AppContext from 'context/app';
 import UserLogout from 'components/user/logout/Logout';
 
+/**
+ * Stateful component responsible for rendering the top navigation of this application.
+ * There are 2 main navigation blocks: for authenticated and non-authenticated user.
+ * Non-authenticated user will be able to see links to "Register" and "Login", while
+ * authenticated user will be able to see the "Logout" link and his username.
+ * */
 const LayoutHeaderNavigation = () => {
   const [showNavbar, setShowNavbar] = useState<boolean>(false);
   const {appState} = useContext(AppContext)
@@ -16,7 +22,7 @@ const LayoutHeaderNavigation = () => {
   // bootstrap components are updated.
   return (
     <Navbar expand="lg"
-            onToggle={value => setShowNavbar(!showNavbar)}
+            onToggle={() => setShowNavbar(!showNavbar)}
             expanded={false}
             bg='light'
     >

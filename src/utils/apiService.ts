@@ -1,76 +1,153 @@
 import LOCAL_STORAGE_KEY from 'constants/localstorage';
 import {cloudWalletApi, issuerApi, verifierApi} from 'utils/api';
 import {endpoints} from 'constants/endpoints';
+import {
+  GetSavedCredentialsOutput,
+  SaveCredentialInput, SaveCredentialOutput,
+  SignCredentialInput,
+  SignCredentialOutput,
+  VCBuildUnsignedInput,
+  VCBuildUnsignedOutput, VerifyCredentialInput, VerifyCredentialOutput,
+} from 'utils/apis';
 
-export class ClientApiService {
-  async signUp(username: string, password: string) {
+/**
+ * Static class providing useful methods for reaching different endpoints
+ * and managing app localstorage.
+ * */
+export default class ApiService {
+  /**
+   * Method for creating a new user account.
+   * Current project setup supports only arbitrary username usage, but email or phone numbers can be used as well.
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/User/SignUp.
+   * */
+  static async signUp(username: string, password: string) {
     const signUpParams = { username, password }
     const {data} =  await cloudWalletApi.post(endpoints.SIGNUP, signUpParams);
 
     return data;
   }
 
-  async logIn(username: string, password: string) {
+  /**
+   * Method for logging in existing user into the network.
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/User/Login.
+   * */
+  static async logIn(username: string, password: string) {
     const loginParams = { username, password }
     const {data} =  await cloudWalletApi.post(endpoints.LOGIN, loginParams)
 
     return data;
   }
 
-  async logout() {
+  /**
+   * Shortcut method for storing access and DID tokens into localstorage,
+   * and setting authorization bearer on our axios API instance(s).
+   * */
+  static clientSideLogIn(accessToken: string, did: string) {
+    ApiService.storeAccessAndDidTokens(accessToken, did)
+    ApiService.setAuthorizationBearer(accessToken);
+  }
+
+  /**
+   * Method for logging user on both backend and client side.
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/User/Logout.
+   * */
+  static async logout() {
     const {data} = await cloudWalletApi.post(endpoints.LOGOUT)
 
-    ClientApiService.removeAccessTokenToLocalStorage()
-    ClientApiService.removeDidTokenToLocalStorage()
+    ApiService.removeAccessAndDidTokens()
 
     return data;
   }
 
-  static async issueUnsignedVC(example: any) {
-    const {data} = await issuerApi.post(endpoints.VC_BUILD_UNSIGNED, example);
+  /**
+   * Method for issuing an unsigned VC.
+   * Endpoint info: https://affinity-issuer.staging.affinity-project.org/api-docs/#/VC/BuildUnsigned.
+   * */
+  static async issueUnsignedVC(example: VCBuildUnsignedInput) {
+    const {data} = await issuerApi.post<VCBuildUnsignedOutput>(endpoints.VC_BUILD_UNSIGNED, example);
 
     return data;
   }
 
-  static async signVC(dataToSign: any) {
-    const {data} = await cloudWalletApi.post(endpoints.WALLET_SIGN_CREDENTIALS, dataToSign);
+  /**
+   * Method for signing a VC.
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/SignCredential.
+   * */
+  static async signVC(input: SignCredentialInput) {
+    const {data} = await cloudWalletApi.post<SignCredentialOutput>(endpoints.WALLET_SIGN_CREDENTIALS, input);
 
     return data;
   }
 
-  static async verifyVC(verifiableCredentials: any[]) {
-    const {data} = await verifierApi.post(endpoints.VERIFIER_VERIFY_VCS, {verifiableCredentials})
+  /**
+   * Method for verifying multiple VCs.
+   * Endpoint info: https://affinity-verifier.staging.affinity-project.org/api-docs/#/Verifier/VerifyCredentials.
+   * */
+  static async verifyVC(input: VerifyCredentialInput) {
+    const {data} = await verifierApi.post<VerifyCredentialOutput>(endpoints.VERIFIER_VERIFY_VCS, {verifiableCredentials: input})
 
     return data;
   }
 
-  static async storeVerifiedVCs(verifiedVCs: any[]) {
-    const {data} = await cloudWalletApi.post(endpoints.WALLET_CREDENTIALS, {data: verifiedVCs})
+  /**
+   * Method for storing signed VCs.
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/StoreCredentials.
+   * */
+  static async storeSignedVCs(input: SaveCredentialInput) {
+    const {data} = await cloudWalletApi.post<SaveCredentialOutput>(endpoints.WALLET_CREDENTIALS, {input})
 
     return data;
   }
 
-  static async getVerifiedVCs() {
-    const {data} = await cloudWalletApi.get(endpoints.WALLET_CREDENTIALS)
+  /**
+   * Method for retrieving saved VCs.
+   * Note: you might have to install a CORS extension for this endpoint if you are using Chrome browser. Tested
+   * with "CORS Unblock" for Chrome (https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino/).
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/GetCredentials.
+   * */
+  static async getSavedVCs() {
+    const {data} = await cloudWalletApi.get<GetSavedCredentialsOutput>(endpoints.WALLET_CREDENTIALS)
 
     return data;
   }
 
-  static async deleteVerifiedVC(VCId: string) {
+  /**
+   * Method for deleting stored VC.
+   * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/DeleteCredential.
+   * */
+  static async deleteStoredVC(VCId: string) {
     const {data} = await cloudWalletApi.delete(`${endpoints.WALLET_CREDENTIALS}/${VCId}`)
 
     return data;
   }
 
-  storeAccessAndDidTokens(accessToken: string, did: string) {
-    ClientApiService.saveAccessTokenToLocalStorage(accessToken);
-    ClientApiService.saveDidTokenToLocalStorage(did);
+  /**
+   * Shortcut method for storing access and DID tokens into localstorage.
+   * */
+  static storeAccessAndDidTokens(accessToken: string, did: string) {
+    ApiService.saveAccessTokenToLocalStorage(accessToken);
+    ApiService.saveDidTokenToLocalStorage(did);
   }
 
+  /**
+   * Shortcut method for removing access and DID tokens from localstorage.
+   * */
+  static removeAccessAndDidTokens() {
+    ApiService.removeAccessTokenFromLocalStorage()
+    ApiService.removeDidTokenFromLocalStorage()
+  }
+
+  /**
+   * Method for setting authorization token in cloud wallet axios instance.
+   * Important for communicating with backend services.
+   * */
   static setAuthorizationBearer = (accessToken: string) => {
     cloudWalletApi.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   }
 
+  /**
+   * Method for storing access token into localstorage.
+   * */
   static saveAccessTokenToLocalStorage(accessToken: string) {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN, accessToken)
@@ -79,7 +156,21 @@ export class ClientApiService {
     }
   }
 
-  static removeAccessTokenToLocalStorage() {
+  /**
+   * Method for retrieving access token from localstorage.
+   * */
+  static getAccessTokenToLocalStorage() {
+    try {
+      return localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  /**
+   * Method for removing access token from localstorage.
+   * */
+  static removeAccessTokenFromLocalStorage() {
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN)
     } catch (err) {
@@ -87,23 +178,51 @@ export class ClientApiService {
     }
   }
 
+  /**
+   * Method for storing DID token into localstorage.
+   * */
   static saveDidTokenToLocalStorage(did: string) {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY.DID_TOKEN, did)
     } catch (err) {
       console.error(err)
+
+      return ''
     }
   }
 
-  static removeDidTokenToLocalStorage() {
+  /**
+   * Method for retrieving DID token from localstorage.
+   * */
+  static getDidTokenToLocalStorage() {
+    try {
+      return localStorage.getItem(LOCAL_STORAGE_KEY.DID_TOKEN)
+    } catch (err) {
+      console.error(err)
+
+      return ''
+    }
+  }
+
+  /**
+   * Method for removing DID token from localstorage.
+   * */
+  static removeDidTokenFromLocalStorage() {
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY.DID_TOKEN)
     } catch (err) {
       console.error(err)
     }
   }
+
+  /**
+   * Method for showing the user a generic message when a request fails or an error has been thrown.
+   * */
+  static alertWithBrowserConsole(consoleMessage: null | string = null, alertMessage?: string) {
+    if( consoleMessage ) {
+      console.log(consoleMessage);
+    }
+
+    alert(alertMessage || 'There has been an issue processing your request. Please check the browser console.')
+  }
 }
-
-const ApiService = new ClientApiService();
-
-export default ApiService;
