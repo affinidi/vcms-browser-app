@@ -72,6 +72,4 @@ export interface VerifyCredentialOutput {
   isValid: boolean,
 }
 
-export interface GetSavedCredentialsOutput {
-  credentials: W3cCredential[],
-}
+export type GetSavedCredentialsOutput = W3cCredential[]

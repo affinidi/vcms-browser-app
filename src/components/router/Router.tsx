@@ -35,8 +35,6 @@ const Router = ({isUserAuthenticated}: Props) => {
   return (
     <Switch>
       <Route exact path={routes.ROOT} component={HomePage} />
-      <Route exact path={routes.SIGNUP} component={UserSignupPage} />
-      <Route exact path={routes.LOGIN} component={UserLoginPage} />
       <Route exact path={routes.INTRO} component={IntroPage} />
       <Route component={NotFoundPage}/>
     </Switch>

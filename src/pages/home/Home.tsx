@@ -4,13 +4,13 @@ import {Button} from 'react-bootstrap';
 import 'pages/home/Home.scss'
 import ApiService from 'utils/apiService';
 import employmentVcData from 'utils/vc-data-examples/employment';
-import {UnsignedW3cCredential, W3cCredential} from 'utils/apis';
+import {GetSavedCredentialsOutput, UnsignedW3cCredential, W3cCredential} from 'utils/apis';
 
 interface State {
   currentUnsignedVC: UnsignedW3cCredential | null,
   currentSignedVC: W3cCredential | null,
   isCurrentVCVerified: boolean,
-  verifiedVCs: W3cCredential[] | null
+  storedVCs: GetSavedCredentialsOutput | null
 }
 
 /**
@@ -22,7 +22,7 @@ const HomePage = () => {
     currentUnsignedVC: null,
     currentSignedVC: null,
     isCurrentVCVerified: false,
-    verifiedVCs: null
+    storedVCs: null
   })
   const {appState} = useContext(AppContext);
 
@@ -32,11 +32,11 @@ const HomePage = () => {
   useEffect(() => {
     const getSavedVCs = async () => {
       try {
-        const arrayOfVerifiedVCs = await ApiService.getSavedVCs();
+        const arrayOfStoredVCs = await ApiService.getSavedVCs();
 
         setState({
           ...state,
-          verifiedVCs: [...arrayOfVerifiedVCs.credentials]
+          storedVCs: [...arrayOfStoredVCs]
         })
       } catch (error) {
         console.log(error.message)
@@ -138,11 +138,11 @@ const HomePage = () => {
         });
 
         if( Array.isArray(credentialIds) && credentialIds.length ) {
-          const oldVerifiedVCs = state.verifiedVCs ? [...state.verifiedVCs] : [];
+          const oldStoredVCs = state.storedVCs ? [...state.storedVCs] : [];
 
           setState({
             ...state,
-            verifiedVCs: [...oldVerifiedVCs, state.currentSignedVC]
+            storedVCs: [...oldStoredVCs, state.currentSignedVC]
           })
         }
 
@@ -161,12 +161,12 @@ const HomePage = () => {
    * */
   const deleteStoredVC = async (index: number) => {
     try {
-      if( state.verifiedVCs ) {
-        await ApiService.deleteStoredVC(state.verifiedVCs[index].id);
+      if( state.storedVCs ) {
+        await ApiService.deleteStoredVC(state.storedVCs[index].id);
 
         setState({
           ...state,
-          verifiedVCs: state.verifiedVCs.filter((value, idx) => idx !== index)
+          storedVCs: state.storedVCs.filter((value, idx) => idx !== index)
         })
 
         alert('Verified VC successfully deleted from your cloud wallet.');
@@ -230,17 +230,17 @@ const HomePage = () => {
           )}
 
           <div className='tutorial__verified-vcs'>
-            <h5 className='font-weight-bold'>Already verified VCs:</h5>
-            {state.verifiedVCs === undefined && ('Loading...')}
-            {state.verifiedVCs && !state.verifiedVCs.length && ('You didn\'t store any signed VCs')}
-            {state.verifiedVCs && state.verifiedVCs.map((verifiedVC, index) => {
+            <h5 className='font-weight-bold'>Stored VCs:</h5>
+            {state.storedVCs === undefined && ('Loading...')}
+            {state.storedVCs && !state.storedVCs.length && ('You didn\'t store any signed VCs')}
+            {state.storedVCs && state.storedVCs.map((storedVC, index) => {
               return (
                 <div key={index} className='tutorial__textarea-block'>
                   <textarea
                     className='tutorial__textarea tutorial__textarea--small'
                     readOnly
                     name='credentials'
-                    value={JSON.stringify(verifiedVC, undefined, '\t')}
+                    value={JSON.stringify(storedVC, undefined, '\t')}
                   />
                   <Button className='tutorial__delete-button' onClick={() => deleteStoredVC(index)}>Delete this VC</Button>
                 </div>

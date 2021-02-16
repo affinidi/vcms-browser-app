@@ -93,10 +93,10 @@ export default class ApiService {
    * Method for storing signed VCs.
    * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/StoreCredentials.
    * */
-  static async storeSignedVCs(input: SaveCredentialInput) {
-    const {data} = await cloudWalletApi.post<SaveCredentialOutput>(endpoints.WALLET_CREDENTIALS, {input})
+  static async storeSignedVCs(data: SaveCredentialInput) {
+    const response = await cloudWalletApi.post<SaveCredentialOutput>(endpoints.WALLET_CREDENTIALS, data)
 
-    return data;
+    return response.data;
   }
 
   /**

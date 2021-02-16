@@ -12,7 +12,7 @@ import {routes} from 'constants/routes';
 const UserLogin = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const {setAppState} = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
   const history = useHistory();
 
   /**
@@ -28,14 +28,12 @@ const UserLogin = () => {
 
       ApiService.clientSideLogIn(accessToken, did);
 
-      setAppState(prevState => {
-        return {
-          ...prevState,
-          isAuthenticated: true,
-          accessToken,
-          didToken: did,
-          username
-        }
+      setAppState({
+        ...appState,
+        isAuthenticated: true,
+        accessToken,
+        didToken: did,
+        username
       })
 
       history.push(routes.ROOT);
@@ -54,12 +52,12 @@ const UserLogin = () => {
 
   return (
     <form className='login-form' onSubmit={onSubmit}>
-      <FormGroup>
+      <FormGroup controlId='username'>
         <FormLabel className='label'>Username</FormLabel>
         <FormControl
           autoFocus
           className='input'
-          type='username'
+          type='text'
           value={username}
           onChange={ event => setUsername(event.target.value) }
         />
