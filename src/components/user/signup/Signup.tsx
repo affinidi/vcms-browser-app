@@ -14,7 +14,7 @@ const UserSignup = () => {
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [isCheckboxChecked, setIsCheckboxChecked] = useState<boolean>(false)
-  const {setAppState} = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
   const history = useHistory();
 
   /**
@@ -41,19 +41,19 @@ const UserSignup = () => {
 
         ApiService.clientSideLogIn(accessToken, did);
 
-        setAppState(prevState => {
-          return {
-            ...prevState,
-            isAuthenticated: true,
-            accessToken,
-            didToken: did,
-            username
-          }
+        setAppState({
+          ...appState,
+          isAuthenticated: true,
+          accessToken,
+          didToken: did,
+          username
         })
 
         history.push(routes.ROOT);
       }
-
+      else {
+        alert('Please provide a valid username (phone numbers and emails addresses are not allowed).')
+      }
     } catch (error) {
       ApiService.alertWithBrowserConsole(error.message)
     }
@@ -77,12 +77,12 @@ const UserSignup = () => {
 
   return (
     <form className='signup-form' onSubmit={onSubmit}>
-      <FormGroup>
+      <FormGroup controlId='username'>
         <FormLabel className='label'>Username</FormLabel>
         <FormControl
           autoFocus
           className='input'
-          type='username'
+          type='text'
           value={username}
           onChange={ event => setUsername(event.target.value) }
         />
@@ -110,7 +110,7 @@ const UserSignup = () => {
           <FormCheck
             type="checkbox"
             checked={isCheckboxChecked}
-            onChange={() => toggleCheckbox()}
+            onChange={toggleCheckbox}
             className='signup-checkbox'
             label='I accept the terms and conditions'
           />
@@ -120,7 +120,7 @@ const UserSignup = () => {
         Sign Up
       </Button>
       <p className='link-label'>
-        Already have an account?
+        Already have an account?&nbsp;
         <Link to={routes.LOGIN} className='Link'>Login</Link>
       </p>
     </form>

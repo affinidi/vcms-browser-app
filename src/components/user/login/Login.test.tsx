@@ -6,21 +6,13 @@ import ApiService from 'utils/apiService';
 import {MemoryRouter} from 'react-router-dom';
 import AppContext, {appContextDefaultValue} from 'context/app';
 
-describe('Login component test', () => {
+describe('User Login component test', () => {
   test('Form render', () => {
-    const {container} = render(<UserLogin/>);
-    expect(container.querySelector('form')).toBeTruthy()
-  })
-
-  test('Input fields render', () => {
-    const {getByLabelText} = render(<UserLogin/>);
+    const {container, getByLabelText} = render(<UserLogin/>);
 
     expect(getByLabelText('Username')).toBeTruthy()
     expect(getByLabelText('Password')).toBeTruthy()
-  })
-
-  test('Submit button render', () => {
-    const {container} = render(<UserLogin/>);
+    expect(container.querySelector('form')).toBeTruthy()
     expect(container.querySelector('button[type="submit"]')).toBeTruthy()
   })
 
@@ -35,7 +27,7 @@ describe('Login component test', () => {
       setAppState: mockSetAppState
     }
 
-    const {container, getByLabelText} = render(
+    const {container, getByLabelText, getByRole} = render(
       <MemoryRouter>
         <AppContext.Provider value={contextValue}>
           <UserLogin/>
@@ -45,7 +37,7 @@ describe('Login component test', () => {
 
     const usernameField = getByLabelText('Username');
     const passwordField = getByLabelText('Password');
-    const submitButton = container.querySelector('button[type="submit"]');
+    const submitButton = getByRole('button', {name: 'Log in'});
 
     jest.spyOn(ApiService, 'logIn').mockReturnValue(Promise.resolve({
       accessToken,
@@ -55,38 +47,33 @@ describe('Login component test', () => {
     jest.spyOn(ApiService, 'alertWithBrowserConsole')
     jest.spyOn(ApiService, 'clientSideLogIn');
 
-    if( submitButton ) {
-      expect(submitButton).toBeInTheDocument()
-      expect(submitButton).toHaveAttribute('disabled')
+    expect(submitButton).toBeInTheDocument()
+    expect(submitButton).toHaveAttribute('disabled')
 
-      act(() => {
-        fireEvent.change(usernameField, {
-          target: {
-            value: username
-          }
-        })
-
-        fireEvent.change(passwordField, {
-          target: {
-            value: 'test'
-          }
-        })
+    act(() => {
+      fireEvent.change(usernameField, {
+        target: {
+          value: username
+        }
       })
 
-      expect(submitButton).not.toHaveAttribute('disabled')
-
-      await act(async () => {
-        await userEvent.click(submitButton)
+      fireEvent.change(passwordField, {
+        target: {
+          value: 'test'
+        }
       })
+    })
 
-      expect(ApiService.logIn).toHaveBeenCalledTimes(1)
-      expect(ApiService.clientSideLogIn).toHaveBeenCalledTimes(1)
-      expect(mockSetAppState).toHaveBeenCalledTimes(1)
-      expect(ApiService.alertWithBrowserConsole).toHaveBeenCalledTimes(0)
-    }
-    else {
-      throw new Error('Submit button missing')
-    }
+    expect(submitButton).not.toHaveAttribute('disabled')
+
+    await act(async () => {
+      await userEvent.click(submitButton)
+    })
+
+    expect(ApiService.logIn).toHaveBeenCalledTimes(1)
+    expect(ApiService.clientSideLogIn).toHaveBeenCalledTimes(1)
+    expect(mockSetAppState).toHaveBeenCalledTimes(1)
+    expect(ApiService.alertWithBrowserConsole).toHaveBeenCalledTimes(0)
   })
 
   test('Login should fail', async () => {
@@ -100,7 +87,7 @@ describe('Login component test', () => {
     jest.spyOn(ApiService, 'logIn').mockReturnValue(Promise.reject('Reject login'));
     jest.spyOn(ApiService, 'alertWithBrowserConsole').mockImplementation(() => {})
 
-    const {container, getByLabelText} = render(
+    const {getByLabelText, getByRole} = render(
       <AppContext.Provider value={contextValue}>
         <UserLogin/>
       </AppContext.Provider>
@@ -108,31 +95,26 @@ describe('Login component test', () => {
 
     const usernameField = getByLabelText('Username');
     const passwordField = getByLabelText('Password');
-    const submitButton = container.querySelector('button[type="submit"]');
+    const submitButton = getByRole('button', {name: 'Log in'});
 
-    if( submitButton ) {
-      act(() => {
-        fireEvent.change(usernameField, {
-          target: {
-            value: 'test'
-          }
-        })
-
-        fireEvent.change(passwordField, {
-          target: {
-            value: 'test'
-          }
-        })
+    act(() => {
+      fireEvent.change(usernameField, {
+        target: {
+          value: 'test'
+        }
       })
 
-      await act(async () => {
-        await userEvent.click(submitButton)
+      fireEvent.change(passwordField, {
+        target: {
+          value: 'test'
+        }
       })
+    })
 
-      expect(ApiService.alertWithBrowserConsole).toHaveBeenCalledTimes(1)
-    }
-    else {
-      throw new Error('Submit button missing')
-    }
+    await act(async () => {
+      await userEvent.click(submitButton)
+    })
+
+    expect(ApiService.alertWithBrowserConsole).toHaveBeenCalledTimes(1)
   })
 })

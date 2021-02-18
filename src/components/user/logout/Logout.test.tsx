@@ -4,14 +4,14 @@ import {act, render} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ApiService from 'utils/apiService';
 
-describe("Logout component test", () => {
-  test("Render the logout element", () => {
+describe('User Logout component test', () => {
+  test('Render the logout element', () => {
     const {getByText} = render(<UserLogout />);
 
-    expect(getByText("Logout")).toBeInTheDocument();
+    expect(getByText('Logout')).toBeInTheDocument();
   });
 
-  test("Match inline snapshot", () => {
+  test('Match inline snapshot', () => {
     const {container} = render(<UserLogout />);
 
     expect(container.firstChild).toMatchInlineSnapshot(`

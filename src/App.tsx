@@ -16,7 +16,7 @@ function App() {
   })
 
   useEffect(() => {
-    const accessToken = ApiService.getAccessTokenToLocalStorage();
+    const accessToken = ApiService.getAccessTokenFromLocalStorage();
     const didToken = ApiService.getDidTokenToLocalStorage();
 
     if( accessToken ) {
@@ -68,16 +68,14 @@ function App() {
         return response;
       }, function (error) {
         if (401 === error.response.status) {
-          ApiService.removeAccessTokenFromLocalStorage()
-          ApiService.removeDidTokenFromLocalStorage()
-
-          alert('Your JWT token has expired. Please, log in again.')
+          ApiService.removeAccessAndDidTokens()
 
           setAppState({
             ...appState,
             ...appContextDefaultValue
           })
 
+          alert('Your JWT token has expired. Please, log in again.')
         } else {
           return Promise.reject(error);
         }

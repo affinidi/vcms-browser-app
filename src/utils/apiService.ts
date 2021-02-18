@@ -33,9 +33,9 @@ export default class ApiService {
    * */
   static async logIn(username: string, password: string) {
     const loginParams = { username, password }
-    const {data} =  await cloudWalletApi.post(endpoints.LOGIN, loginParams)
+    const a =  await cloudWalletApi.post(endpoints.LOGIN, loginParams)
 
-    return data;
+    return a.data;
   }
 
   /**
@@ -52,11 +52,9 @@ export default class ApiService {
    * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/User/Logout.
    * */
   static async logout() {
-    const {data} = await cloudWalletApi.post(endpoints.LOGOUT)
+    await cloudWalletApi.post(endpoints.LOGOUT)
 
     ApiService.removeAccessAndDidTokens()
-
-    return data;
   }
 
   /**
@@ -84,7 +82,7 @@ export default class ApiService {
    * Endpoint info: https://affinity-verifier.staging.affinity-project.org/api-docs/#/Verifier/VerifyCredentials.
    * */
   static async verifyVC(input: VerifyCredentialInput) {
-    const {data} = await verifierApi.post<VerifyCredentialOutput>(endpoints.VERIFIER_VERIFY_VCS, {verifiableCredentials: input})
+    const {data} = await verifierApi.post<VerifyCredentialOutput>(endpoints.VERIFIER_VERIFY_VCS, input)
 
     return data;
   }
@@ -116,9 +114,7 @@ export default class ApiService {
    * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/DeleteCredential.
    * */
   static async deleteStoredVC(VCId: string) {
-    const {data} = await cloudWalletApi.delete(`${endpoints.WALLET_CREDENTIALS}/${VCId}`)
-
-    return data;
+    await cloudWalletApi.delete(`${endpoints.WALLET_CREDENTIALS}/${VCId}`)
   }
 
   /**
@@ -159,7 +155,7 @@ export default class ApiService {
   /**
    * Method for retrieving access token from localstorage.
    * */
-  static getAccessTokenToLocalStorage() {
+  static getAccessTokenFromLocalStorage() {
     try {
       return localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN)
     } catch (err) {
@@ -186,8 +182,6 @@ export default class ApiService {
       localStorage.setItem(LOCAL_STORAGE_KEY.DID_TOKEN, did)
     } catch (err) {
       console.error(err)
-
-      return ''
     }
   }
 
@@ -199,8 +193,6 @@ export default class ApiService {
       return localStorage.getItem(LOCAL_STORAGE_KEY.DID_TOKEN)
     } catch (err) {
       console.error(err)
-
-      return ''
     }
   }
 
@@ -218,7 +210,7 @@ export default class ApiService {
   /**
    * Method for showing the user a generic message when a request fails or an error has been thrown.
    * */
-  static alertWithBrowserConsole(consoleMessage: null | string = null, alertMessage?: string) {
+  static alertWithBrowserConsole(consoleMessage: null | string | string[] = null, alertMessage?: string) {
     if( consoleMessage ) {
       console.log(consoleMessage);
     }

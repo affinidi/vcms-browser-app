@@ -23,7 +23,7 @@ function renderNavigationWithContext(options?: Partial<AppContextState>) {
   )
 }
 
-describe('Navigation component test', () => {
+describe('Layout Header Navigation component test', () => {
   test('Check if component renders properly (user not logged in)', () => {
     const {getByText} = renderNavigationWithContext();
     const signUpAnchor = getByText('Sign Up');
@@ -67,7 +67,7 @@ describe('Navigation component test', () => {
       expect(navbar.classList.contains('show')).toBeTruthy();
     }
     else {
-      throw new Error('Navbar element doesn\'t exist.')
+      throw new Error(`Navbar element doesn't exist.`)
     }
   })
 })
