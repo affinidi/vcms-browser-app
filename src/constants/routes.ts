@@ -7,10 +7,8 @@ interface Routes {
   LOGIN: string,
   SIGNUP: string,
   SIGNUP_CONFIRM: string,
-  ISSUER: string,
-  VERIFIER: string,
-  HOLDER: string,
-  INTRO: string
+  INTRO: string,
+  API_KEY: string
 }
 
 export const routes: Routes = {
@@ -18,8 +16,6 @@ export const routes: Routes = {
   LOGIN: '/login',
   SIGNUP: '/signup',
   SIGNUP_CONFIRM: '/confirm-signup',
-  ISSUER: '/issuer',
-  VERIFIER: '/verifier',
-  HOLDER: '/holder',
-  INTRO: '/intro'
+  INTRO: '/intro',
+  API_KEY: '/api-key'
 }
