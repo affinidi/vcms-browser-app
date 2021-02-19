@@ -1,6 +1,4 @@
-export interface FreeFormObject {
-  [key: string]: string | number | FreeFormObject | string[] | FreeFormObject[]
-}
+export interface FreeFormObject {}
 
 export interface VCBuildUnsignedInput {
   type: string,
@@ -72,6 +70,4 @@ export interface VerifyCredentialOutput {
   isValid: boolean,
 }
 
-export interface GetSavedCredentialsOutput {
-  credentials: W3cCredential[],
-}
+export type GetSavedCredentialsOutput = W3cCredential[]
