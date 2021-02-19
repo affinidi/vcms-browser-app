@@ -72,7 +72,7 @@ const UserLogin = () => {
         />
       </FormGroup>
       <Button className='button' block disabled={!validateForm()} type='submit'>
-        Log in
+        Log In
       </Button>
     </form>
   )

@@ -8,12 +8,12 @@ import AppContext, {appContextDefaultValue} from 'context/app';
 
 describe('User Login component test', () => {
   test('Form render', () => {
-    const {container, getByLabelText} = render(<UserLogin/>);
+    const {container, getByRole, getByLabelText} = render(<UserLogin/>);
 
     expect(getByLabelText('Username')).toBeTruthy()
     expect(getByLabelText('Password')).toBeTruthy()
+    expect(getByRole('button', {name: 'Log In'})).toBeInTheDocument()
     expect(container.querySelector('form')).toBeTruthy()
-    expect(container.querySelector('button[type="submit"]')).toBeTruthy()
   })
 
   test('Form submit with test data', async () => {
@@ -27,7 +27,7 @@ describe('User Login component test', () => {
       setAppState: mockSetAppState
     }
 
-    const {container, getByLabelText, getByRole} = render(
+    const {getByLabelText, getByRole} = render(
       <MemoryRouter>
         <AppContext.Provider value={contextValue}>
           <UserLogin/>
@@ -37,7 +37,7 @@ describe('User Login component test', () => {
 
     const usernameField = getByLabelText('Username');
     const passwordField = getByLabelText('Password');
-    const submitButton = getByRole('button', {name: 'Log in'});
+    const submitButton = getByRole('button', {name: 'Log In'});
 
     jest.spyOn(ApiService, 'logIn').mockReturnValue(Promise.resolve({
       accessToken,
@@ -95,7 +95,7 @@ describe('User Login component test', () => {
 
     const usernameField = getByLabelText('Username');
     const passwordField = getByLabelText('Password');
-    const submitButton = getByRole('button', {name: 'Log in'});
+    const submitButton = getByRole('button', {name: 'Log In'});
 
     act(() => {
       fireEvent.change(usernameField, {
