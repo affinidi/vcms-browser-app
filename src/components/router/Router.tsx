@@ -7,6 +7,9 @@ import UserLoginPage from 'pages/user/login/Login';
 import HomePage from 'pages/home/Home';
 import IntroPage from 'pages/intro/Intro';
 import ApiKeyPage from 'pages/api-key/ApiKey';
+import Issuer from 'pages/issuer/Issuer';
+import Holder from 'pages/holder/Holder';
+import Verifier from 'pages/verifier/verifier';
 
 interface Props {
   isUserAuthenticated: boolean
@@ -36,6 +39,9 @@ const Router = ({isUserAuthenticated}: Props) => {
     <Switch>
       <Route exact path={routes.ROOT} component={HomePage} />
       <Route exact path={routes.INTRO} component={IntroPage} />
+      <Route exact path={routes.ISSUER} component={Issuer} />
+      <Route exact path={routes.HOLDER} component={Holder} />
+      <Route exact path={routes.VERIFIER} component={Verifier} />
       <Route component={NotFoundPage}/>
     </Switch>
   )

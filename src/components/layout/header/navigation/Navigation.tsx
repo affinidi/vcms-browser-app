@@ -34,6 +34,21 @@ const LayoutHeaderNavigation = () => {
         </NavbarBrand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
+        {appState.isAuthenticated && (
+          <Navbar.Collapse className={showNavbar ? 'show' : ''}>
+            <Nav className="justify-content-end">
+                <Nav.Item>
+                  <Nav.Link as={NavLink} activeClassName='is-active' to={routes.ISSUER}>Issuer</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link as={NavLink} activeClassName='is-active' to={routes.HOLDER}>Holder</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link as={NavLink} activeClassName='is-active' to={routes.VERIFIER}>Verifier</Nav.Link>
+                </Nav.Item>
+            </Nav>
+          </Navbar.Collapse>
+        )}
         <Navbar.Collapse className={showNavbar ? 'show' : ''}>
           <Nav className="justify-content-end">
             {appState.isAuthenticated && (
