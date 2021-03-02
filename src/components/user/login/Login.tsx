@@ -36,7 +36,7 @@ const UserLogin = () => {
         username
       })
 
-      history.push(routes.ROOT);
+      history.push(routes.ISSUER);
 
     } catch (error) {
       ApiService.alertWithBrowserConsole(error.message)

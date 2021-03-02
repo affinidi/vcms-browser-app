@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import AppContext from 'context/app';
-import {Button, FormControl} from 'react-bootstrap';
+import {Button, FormControl, FormGroup, FormLabel} from 'react-bootstrap';
 import ApiService from 'utils/apiService';
 import {employmentVcData} from 'utils/vc-data-examples/employment';
 import {UnsignedW3cCredential, W3cCredential} from 'utils/apis';
@@ -23,6 +23,7 @@ const Issuer = () => {
       })
       const {appState} = useContext(AppContext);
       const [inputDID, setinputDID] = useState(appState.didToken || '')
+      const [VCschemaData, setVCschemaData] = useState<any>(JSON.stringify(employmentVcData))
       console.log('---ssss');
       
     
@@ -51,26 +52,37 @@ const Issuer = () => {
     
     //     getSavedVCs();
     //   }, []);
+
+    const isJson = (str: string) => {
+      try {
+          JSON.parse(str);
+      } catch (e) {
+          return false;
+      }
+      return true;
+  }
     
       /**
        * Function for issuing an unsigned employment VC.
        * */
       const issueEmploymentPersonVC = async () => {
         try {
-          const example = {...employmentVcData}
+          if (isJson(VCschemaData)) {
+            const example = {...JSON.parse(VCschemaData)}
     
-          example.holderDid = inputDID || appState.didToken || '';
-    
-          const {unsignedVC} = await ApiService.issueUnsignedVC(example);
-    
-          setState({
-            ...state,
-            currentUnsignedVC: unsignedVC,
-            currentSignedVC: null,
-            isCurrentVCVerified: false
-          })
-    
-          alert('Unsigned VC successfully created.');
+            example.holderDid = inputDID || appState.didToken || '';
+      
+            const {unsignedVC} = await ApiService.issueUnsignedVC(example);
+      
+            setState({
+              ...state,
+              currentUnsignedVC: unsignedVC,
+              currentSignedVC: null,
+              isCurrentVCVerified: false
+            })
+      
+            alert('Unsigned VC successfully created.');
+          }
         } catch (error) {
           ApiService.alertWithBrowserConsole(error.message);
         }
@@ -105,36 +117,73 @@ const Issuer = () => {
         setinputDID(value)
       }
 
+      const onVCschemaDataChange = (value: string) => {
+        setVCschemaData(value)
+      }
+
+      const resetToDefaults = () => {
+        setVCschemaData(JSON.stringify(employmentVcData))
+        setinputDID(appState.didToken || '')
+      }
+
 
     return (
-        <div className='issuer'>
-            <div className='tutorial__column tutorial__column--issuer'>
+        <div className='tutorial-issuer'>
+            {/* <div className='tutorial__column tutorial__column--issuer'>
                 <h3 className='tutorial__column-title'>Issuer</h3>
-                <div className='tutorial__column-steps'>
+                <div className='tutorial__column-steps'> */}
                 <div className='tutorial__step'>
-                    <span className='tutorial__step-text'>
-                    <strong>Step 1:</strong> Issue unsigned VC to {
-                      inputDID === appState.didToken ? 'self' : 'another did'
-                    }
-                    </span>
+                    <p className='tutorial__step-text'>
+                    {/* <strong>Step 1:</strong>  */}
+                    <strong>Issue unsigned VC</strong>
+                    <Button 
+                    style={{float: 'right'}}
+                    onClick={e => resetToDefaults()}
+                    >Reset to defaults</Button>
+                    </p>
+                    <FormGroup
+                      style={{margin: '30px 0'}}
+                    >
+                    <FormLabel>Enter VC data:</FormLabel>
                     <FormControl
-                      placeholder="Username"
+                      as="textarea"
+                      rows={15}
+                      placeholder="Enter VC data"
+                      aria-label="Verifiable Credential"
+                      aria-describedby="basic-addon1"
+                      value={VCschemaData}
+                      onChange={e => onVCschemaDataChange(e.target.value)}
+                    />
+                    </FormGroup>
+                    <FormGroup
+                      style={{margin: '30px 0'}}
+                    >
+                    <FormLabel>Receiver DID:</FormLabel>
+                    <FormControl
+                      as="textarea"
+                      rows={3}
+                      placeholder="Receiver DID"
                       aria-label="Username"
                       aria-describedby="basic-addon1"
                       value={inputDID}
                       onChange={e => onDidValueChange(e.target.value)}
-                      style={{margin: '20px 0'}}
                     />
-                    <Button onClick={issueEmploymentPersonVC}>Issue unsigned VC</Button>
+                    </FormGroup>
+                    <Button onClick={issueEmploymentPersonVC}>Issue unsigned VC to 
+                    {
+                      inputDID === appState.didToken ? ' self' : ' another did'
+                    }
+                    </Button>
                 </div>
                 <div className='tutorial__step'>
                     <span className='tutorial__step-text'>
-                    <strong>Step 2:</strong> Sign the unsigned VC
+                    {/* <strong>Step 2:</strong>  */}
+                    <strong>Sign the unsigned VC</strong>
                     </span>
                     <Button onClick={signVc}>Sign unsigned VC</Button>
                 </div>
-                </div>
-            </div>
+                {/* </div>
+            </div> */}
             <div className="json-tree">
               <ReactJson 
               src={state.currentSignedVC || state.currentUnsignedVC || {}} 

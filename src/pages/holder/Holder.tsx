@@ -112,28 +112,29 @@ const Holder = () => {
   }
 
   return (
-    <div className='tutorial'>
-      <div className='tutorial__column tutorial__column--holder'>
+    <div className='tutorial-holder'>
+      {/* <div className='tutorial__column tutorial__column--holder'>
         <h3 className='tutorial__column-title'>Holder</h3>
         <div className='tutorial__column-steps'>
-          <div className='tutorial__step'>
+          <div className='tutorial__step'> */}
             <span className='tutorial__step-text'>
-              <strong>Step 3:</strong> Store signed VC
+              {/* <strong>Step 3:</strong>  */}
+              Store signed VC
             </span>
-            <Button onClick={storeSignedVC}>Store signed VC</Button>
-          </div>
+          {/* </div> */}
 
           {/* <h5 className='font-weight-bold'>Current VC:{(!state.currentUnsignedVC && !state.currentSignedVC) && (' None')}</h5> */}
           <FormControl
               as="textarea"
               rows={15}
-              placeholder="Enter Verifiable Credential"
+              placeholder="Enter the VC"
               aria-label="Verifiable Credential"
               aria-describedby="basic-addon1"
               value={inputVC}
               onChange={e => onVCValueChange(e.target.value)}
               style={{margin: '20px 0'}}
             />
+            <Button onClick={storeSignedVC}>Store signed VC</Button>
           {(state.currentUnsignedVC || state.currentSignedVC) && (
             <>
               <div>
@@ -185,8 +186,8 @@ const Holder = () => {
               )
             })}
           </div>
-        </div>
-      </div>
+        {/* </div>
+      </div> */}
     </div>
   )
 }

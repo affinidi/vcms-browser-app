@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import AppContext from 'context/app';
 import {Button, FormControl} from 'react-bootstrap';
-import 'pages/home/Home.scss'
+import 'pages/verifier/verifier.scss'
 import ApiService from 'utils/apiService';
 import {GetSavedCredentialsOutput, UnsignedW3cCredential, W3cCredential} from 'utils/apis';
 
@@ -99,13 +99,14 @@ const Verifier = () => {
   }
 
   return (
-    <div className='tutorial'>
-      <div className='tutorial__column tutorial__column--verifier'>
+    <div className='tutorial-verifier'>
+      {/* <div className='tutorial__column tutorial__column--verifier'>
         <h3 className='tutorial__column-title'>Verifier</h3>
         <div className='tutorial__column-steps'>
-          <div className='tutorial__step'>
+          <div className='tutorial__step'> */}
             <span className='tutorial__step-text'>
-              <strong>Step 4:</strong> Verify VC
+              {/* <strong>Step 4:</strong>  */}
+              Verify VC
             </span>
             <FormControl
               as="textarea"
@@ -118,9 +119,9 @@ const Verifier = () => {
               style={{margin: '20px 0'}}
             />
             <Button onClick={verifyVC}>Verify signed VC</Button>
-          </div>
+          {/* </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
