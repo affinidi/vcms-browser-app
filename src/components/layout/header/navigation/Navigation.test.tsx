@@ -49,6 +49,8 @@ describe('Layout Header Navigation component test', () => {
   })
 
   test('Check if navigation toggles', () => {
+    const globalWidth = global.innerWidth
+
     Object.defineProperty(global, 'innerWidth', {writable: true, configurable: true, value: 200})
     global.dispatchEvent(new Event('resize'));
 
@@ -69,5 +71,7 @@ describe('Layout Header Navigation component test', () => {
     else {
       throw new Error(`Navbar element doesn't exist.`)
     }
+
+    Object.defineProperty(global, 'innerWidth', {writable: true, configurable: true, value: globalWidth})
   })
 })

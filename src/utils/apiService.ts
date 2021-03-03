@@ -99,8 +99,6 @@ export default class ApiService {
 
   /**
    * Method for retrieving saved VCs.
-   * Note: you might have to install a CORS extension for this endpoint if you are using Chrome browser. Tested
-   * with "CORS Unblock" for Chrome (https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino/).
    * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/GetCredentials.
    * */
   static async getSavedVCs() {
@@ -111,6 +109,8 @@ export default class ApiService {
 
   /**
    * Method for deleting stored VC.
+   * Note: you might have to install a CORS extension for this endpoint if you are using Chrome browser. Tested
+   * with "CORS Unblock" for Chrome (https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino/).
    * Endpoint info: https://cloud-wallet-api.staging.affinity-project.org/api-docs/#/Wallet/DeleteCredential.
    * */
   static async deleteStoredVC(VCId: string) {
